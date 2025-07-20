@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import SupplierModal     from "../components/SupplierModal";
-import AddSupplierModal  from "../components/AddSupplierModal";
+import SupplierModal     from "../components/SupplierModal.jsx";
+import AddSupplierModal  from "../components/AddSupplierModal.jsx";
 import "../CSS/SupplierList.css";
 
 const SupplierList = () => {

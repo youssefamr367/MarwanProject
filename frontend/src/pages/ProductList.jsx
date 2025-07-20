@@ -1,7 +1,7 @@
 // src/pages/ProductList.jsx
 import { useState, useEffect, useCallback } from "react";
-import ProductModal from "../components/ProductModal";
-import AddProductModal from "../components/AddProductModal";
+import ProductModal from "../components/ProductModal.jsx";
+import AddProductModal from "../components/AddProductModal.jsx";
 import "../CSS/ProductList.css";
 
 const ProductList = () => {

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import OrderDetailModal from "../components/OrderDetailModal";
-import AddOrderModal   from "../components/AddOrderModal";
+import OrderDetailModal from "../components/OrderDetailModal.jsx";
+import AddOrderModal   from "../components/AddOrderModal.jsx";
 import "../CSS/OrderList.css";
 
 // show label to user, but filter by the exact status value
