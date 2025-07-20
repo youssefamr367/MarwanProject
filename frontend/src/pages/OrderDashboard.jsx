@@ -2,7 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 // @ts-ignore
 import * as XLSX from "xlsx";
-import OrderDetailModal from "../components/OrderDetailModal";  // ← import here
+import OrderDetailModal from "../components/OrderDetailModal.jsx";  // ← import here
 import "../CSS/OrderDashboard.css";
 
 const TABS = [

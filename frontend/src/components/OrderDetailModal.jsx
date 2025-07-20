@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ItemDetailModal from "./ItemDetailModal";
+import ItemDetailModal from "./ItemDetailModal.jsx";
 import "../CSS/OrderDetailModal.css";
 
 const OrderDetailModal = ({ order, onClose, refreshList }) => {
