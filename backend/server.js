@@ -1,52 +1,79 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
+// Setup __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+// Load .env variables
 dotenv.config();
+
 const app = express();
 
+// Enable JSON body parsing
 app.use(express.json());
 
-//imports Route
-import ProductRoutes from "./routes/ProductRoute.js"
-import OrderRoutes from "./routes/OrderRoute.js"
-import supplierRoutes from './routes/SupplierRoute.js';
-import fabricRoutes from './routes/FabricRoute.js';
-import eshraRoutes     from "./routes/EshraRoute.js";
-import paintingRoutes  from "./routes/PaintingRoute.js";
-import marbleRoutes    from "./routes/MarbleRoute.js";
-import dehnatRoutes    from "./routes/DehnatRoute.js";
+// CORS for development only
+if (process.env.NODE_ENV !== "production") {
+  app.use(cors({ origin: "http://localhost:5173" }));
+}
 
+// Log incoming requests
+app.use((req, res, next) => {
+  console.log(`[${req.method}] ${req.path}`);
+  next();
+});
 
+// Routes
+import ProductRoutes from "./routes/ProductRoute.js";
+import OrderRoutes from "./routes/OrderRoute.js";
+import SupplierRoutes from "./routes/SupplierRoute.js";
+import FabricRoutes from "./routes/FabricRoute.js";
+import EshraRoutes from "./routes/EshraRoute.js";
+import PaintingRoutes from "./routes/PaintingRoute.js";
+import MarbleRoutes from "./routes/MarbleRoute.js";
+import DehnatRoutes from "./routes/DehnatRoute.js";
 
-app.use((req,res,next) => {
-  console.log(req.path,req.method)
-  next()
-})
+// Register API endpoints
+const safeUse = (label, path, routeModule) => {
+  try {
+    console.log(`Registering route: ${label} at path: "${path}"`);
+    app.use(path, routeModule);
+    console.log(`✅ Mounted ${label}`);
+  } catch (err) {
+    console.error(`❌ Error in ${label}:`, err.message);
+  }
+};
 
-// middleware
-app.use('/api/Product', ProductRoutes);
-app.use('/api/Order', OrderRoutes);
-app.use('/api/suppliers', supplierRoutes);
-app.use('/api/fabrics',    fabricRoutes);
-app.use('/api/eshra',      eshraRoutes);
-app.use('/api/paintings',  paintingRoutes);
-app.use('/api/marbles',    marbleRoutes);
-app.use('/api/dehnat',     dehnatRoutes);
+safeUse("ProductRoutes", "/api/Product", ProductRoutes);
+safeUse("OrderRoutes", "/api/Order", OrderRoutes);
+safeUse("SupplierRoutes", "/api/suppliers", SupplierRoutes);
+safeUse("FabricRoutes", "/api/fabrics", FabricRoutes);
+safeUse("EshraRoutes", "/api/eshra", EshraRoutes);
+safeUse("PaintingRoutes", "/api/paintings", PaintingRoutes);
+safeUse("MarbleRoutes", "/api/marbles", MarbleRoutes);
+safeUse("DehnatRoutes", "/api/dehnat", DehnatRoutes);
 
-
-//connect to mongoDB
+// Serve frontend static files in production (must be last)
+if (process.env.NODE_ENV === "production") {
+  const distPath = path.join(__dirname, "../frontend/dist");
+  app.use(express.static(distPath));
+  app.get("/*", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
+// Connect to MongoDB
 mongoose
-    .connect(process.env.MONGO_URI)
-    .then(() => console.log("🔗 MongoDB connected"))
-    .catch(err => console.error("❌ MongoDB connection error:", err));
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("🔗 MongoDB connected"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-
-
-
-//connect to port
+// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
-    console.log(`🚀 Server started at http://localhost:${PORT}`)
-);
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+});
