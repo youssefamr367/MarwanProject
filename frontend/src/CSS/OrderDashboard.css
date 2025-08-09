@@ -1,100 +1,113 @@
 .OrderDashboard {
-    padding: 20px;
-    font-family: Arial, sans-serif;
+  padding: 20px;
+  font-family: Arial, sans-serif;
 }
 
 .OrderDashboard h1 {
-    margin-bottom: 16px;
+  margin-bottom: 16px;
 }
 
 /* Alert */
 .alert-banner {
-    background: #fef3c7;
-    border: 1px solid #fde047;
-    padding: 12px 16px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    font-weight: bold;
+  background: #fef3c7;
+  border: 1px solid #fde047;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-weight: bold;
 }
 
 /* Summary cards */
 .summary-cards {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
 }
 .summary-cards .card {
-    flex: 1;
-    padding: 16px;
-    border-radius: 6px;
-    color: #1f2937;
+  flex: 1;
+  padding: 16px;
+  border-radius: 6px;
+  color: #1f2937;
 }
-.card.new           { background: #bfdbfe; }
-.card.manufacturing { background: #fef9c3; }
-.card.ready         { background: #d1fae5; }
-.card h3 { margin: 0 0 8px; font-size: 1.1rem; }
-.card p  { margin: 0; font-size: 1.5rem; font-weight: bold; }
+.card.new {
+  background: #bfdbfe;
+}
+.card.manufacturing {
+  background: #fef9c3;
+}
+.card.ready {
+  background: #d1fae5;
+}
+.card h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+.card p {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
 
 /* Tabs + search/export */
 .controls-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 .tabs {
-    display: flex;
-    gap: 8px;
+  display: flex;
+  gap: 8px;
 }
 .tab {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background: #fff;
-    cursor: pointer;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
 }
 .tab.active {
-    background: #1e293b;
-    color: #fff;
-    border-color: #1e293b;
+  background: #1e293b;
+  color: #fff;
+  border-color: #1e293b;
 }
 
 .search-export {
-    display: flex;
-    gap: 8px;
-    align-items: center;
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 .search-export input {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 .export-btn {
-    padding: 8px 14px;
-    background: #1e293b;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  padding: 8px 14px;
+  background: #1e293b;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 /* Table */
 .orders-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 12px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
 }
 .orders-table th,
 .orders-table td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: left;
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
 }
 .orders-table tr.overdue {
-    background: #fecaca;
+  background: #fecaca;
 }
 .no-results {
-    text-align: center;
-    color: #555;
-    padding: 20px 0;
+  text-align: center;
+  color: #555;
+  padding: 20px 0;
 }

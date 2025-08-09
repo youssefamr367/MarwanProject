@@ -1,4 +1,246 @@
-/* reuses .modal-backdrop and .modal-box */
+/* Product Detail Modal Styles */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-box {
+  background: white;
+  padding: 32px;
+  border-radius: 16px;
+  width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.modal-box h3 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #2d3748;
+  font-size: 1.8rem;
+  font-weight: 700;
+  border-bottom: 3px solid #1aac83;
+  padding-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-box h3::before {
+  content: "📦";
+  font-size: 24px;
+}
+
 .modal-box p {
-    margin: 6px 0;
+  margin: 16px 0;
+  color: #4a5568;
+  font-size: 1rem;
+  line-height: 1.6;
+  padding: 12px 16px;
+  background: #f7fafc;
+  border-radius: 8px;
+  border-left: 4px solid #1aac83;
+  transition: all 0.3s ease;
+}
+
+.modal-box p:hover {
+  background: #edf2f7;
+  transform: translateX(4px);
+}
+
+.modal-box p strong {
+  color: #2d3748;
+  font-weight: 700;
+  display: inline-block;
+  min-width: 120px;
+  margin-right: 8px;
+}
+
+/* Material Categories */
+.material-category {
+  margin: 20px 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.material-category h4 {
+  margin: 0 0 16px 0;
+  color: #2d3748;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.material-category.fabrics h4::before {
+  content: "🧵";
+}
+
+.material-category.eshra h4::before {
+  content: "🔧";
+}
+
+.material-category.paintings h4::before {
+  content: "🎨";
+}
+
+.material-category.marble h4::before {
+  content: "💎";
+}
+
+.material-category.dehnat h4::before {
+  content: "⚙️";
+}
+
+.material-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.material-item {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2d3748;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.material-item:hover {
+  background: #1aac83;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(26, 172, 131, 0.3);
+}
+
+/* Product Info Section */
+.product-info {
+  background: linear-gradient(135deg, #ebf8ff 0%, #bee3f8 100%);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  border: 1px solid #bee3f8;
+}
+
+.product-info p {
+  background: white;
+  border-left-color: #4299e1;
+}
+
+.product-info p strong {
+  color: #2b6cb0;
+}
+
+/* Modal Buttons */
+.modal-buttons {
+  margin-top: 24px;
+  text-align: right;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-buttons button {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #1aac83 0%, #0d9488 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(26, 172, 131, 0.3);
+}
+
+.modal-buttons button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(26, 172, 131, 0.4);
+}
+
+.modal-buttons button::before {
+  content: "✖️";
+  font-size: 16px;
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  color: #718096;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modal-box {
+    width: 95%;
+    margin: 20px;
+    padding: 24px;
+  }
+
+  .material-list {
+    flex-direction: column;
+  }
+
+  .material-item {
+    text-align: center;
+  }
+
+  .modal-buttons {
+    flex-direction: column;
+  }
+
+  .modal-buttons button {
+    width: 100%;
+    justify-content: center;
+  }
 }
