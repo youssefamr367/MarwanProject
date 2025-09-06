@@ -22,7 +22,7 @@ const OrderSchema = new Schema(
     items: [OrderItemSchema],
     status: {
       type: String,
-      enum: ["New", "manufacturing", "Done"],
+      enum: ["New", "manufacturing", "Done", "finished"],
       default: "New",
     },
     statusHistory: [StatusHistorySchema],

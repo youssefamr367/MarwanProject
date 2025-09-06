@@ -58,6 +58,37 @@
   font-size: 1rem;
 }
 
+/* Status Badge Styles */
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.new {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.status-badge.manufacturing {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.status-badge.done {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.status-badge.finished {
+  background: #e0e7ff;
+  color: #5b21b6;
+}
+
 /* Enhanced Status History Styles */
 .status-history {
   margin: 24px 0;
@@ -166,6 +197,11 @@
 .status-entry[data-status="Done"] {
   --status-color: #48bb78;
   --status-color-light: #68d391;
+}
+
+.status-entry[data-status="finished"] {
+  --status-color: #805ad5;
+  --status-color-light: #9f7aea;
 }
 
 .product-list {

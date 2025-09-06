@@ -9,6 +9,7 @@ const TABS = [
   { label: "New", value: "New" },
   { label: "In Manufacturing", value: "manufacturing" },
   { label: "Ready to Move", value: "Done" },
+  { label: "Finished", value: "finished" },
 ];
 
 const OrderDashboard = () => {

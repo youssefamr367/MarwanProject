@@ -12,10 +12,14 @@ const ProductList = () => {
 
     // 1) Define fetchProducts once
     const fetchProducts = useCallback(async () => {
-        // Note the leading slash!
-        const res  = await fetch("/api/Product/getAllProduct");
-        const json = await res.json();
-        if (res.ok) setProducts(json);
+        try {
+            // Note the leading slash!
+            const res  = await fetch("/api/Product/getAllProduct");
+            const json = await res.json();
+            if (res.ok) setProducts(json);
+        } catch (err) {
+            console.error("Failed to load products:", err);
+        }
     }, []);
 
     // 2) Run it on mount

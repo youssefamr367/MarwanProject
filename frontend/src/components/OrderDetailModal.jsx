@@ -44,6 +44,9 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
     actions.push({ label: "Move to Ready", next: "Done" });
   } else if (order.status === "Done") {
     actions.push({ label: "Back to Manufacturing", next: "manufacturing" });
+    actions.push({ label: "Mark as Finished", next: "finished" });
+  } else if (order.status === "finished") {
+    actions.push({ label: "Back to Ready", next: "Done" });
   }
 
   return (

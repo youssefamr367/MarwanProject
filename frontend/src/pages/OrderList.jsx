@@ -8,7 +8,8 @@ const STATUS_OPTIONS = [
     { label: "All Statuses",     value: ""             },
     { label: "New",              value: "New"          },
     { label: "In Manufacturing", value: "manufacturing"},
-    { label: "Ready to Move",    value: "Done"         }
+    { label: "Ready to Move",    value: "Done"         },
+    { label: "Finished",         value: "finished"     }
 ];
 
 const OrderList = () => {
@@ -19,9 +20,13 @@ const OrderList = () => {
     const [statusFilter, setStatusFilter] = useState("");
 
     const fetchOrders = useCallback(async () => {
-        const res  = await fetch("/api/Order/getAllOrders");
-        const data = await res.json();
-        if (res.ok) setOrders(data);
+        try {
+            const res  = await fetch("/api/Order/getAllOrders");
+            const data = await res.json();
+            if (res.ok) setOrders(data);
+        } catch (err) {
+            console.error("Failed to load orders:", err);
+        }
     }, []);
 
     useEffect(() => {

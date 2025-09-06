@@ -11,9 +11,13 @@ const SupplierList = () => {
 
     // 1) Fetch all suppliers
     const fetchSuppliers = useCallback(async () => {
-        const res  = await fetch("/api/suppliers/all");
-        const data = await res.json();
-        if (res.ok) setSuppliers(data);
+        try {
+            const res  = await fetch("/api/suppliers/all");
+            const data = await res.json();
+            if (res.ok) setSuppliers(data);
+        } catch (err) {
+            console.error("Failed to load suppliers:", err);
+        }
     }, []);
 
     useEffect(() => {

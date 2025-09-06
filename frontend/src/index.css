@@ -10,6 +10,26 @@ body {
   background: #f1f1f1;
   margin: 0;
   font-family: "Poppins";
+  transition: background-color 0.2s ease;
+}
+
+/* Prevent flash of unstyled content */
+.container {
+  min-height: 100vh;
+  background: #f1f1f1;
+  transition: opacity 0.2s ease;
+}
+
+/* Smooth page transitions */
+.page-transition {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-transition.loaded {
+  opacity: 1;
+  transform: translateY(0);
 }
 header {
   background: #fff;
