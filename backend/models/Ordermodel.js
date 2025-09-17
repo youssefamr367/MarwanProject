@@ -25,6 +25,51 @@ const OrderSchema = new Schema(
       enum: ["New", "manufacturing", "Done", "finished"],
       default: "New",
     },
+    // Optional per-order SLA thresholds (in days) for coloring by status age
+    // Example shape:
+    // {
+    //   New:            { greenDays: 1,  orangeDays: 3,  redDays: 7  },
+    //   manufacturing:  { greenDays: 1,  orangeDays: 45, redDays: 50 },
+    //   Done:           { greenDays: 1,  orangeDays: 10, redDays: 15 }
+    // }
+    statusSla: {
+      type: new Schema(
+        {
+          New: {
+            type: new Schema(
+              {
+                greenDays: { type: Number },
+                orangeDays: { type: Number },
+                redDays: { type: Number },
+              },
+              { _id: false }
+            ),
+          },
+          manufacturing: {
+            type: new Schema(
+              {
+                greenDays: { type: Number },
+                orangeDays: { type: Number },
+                redDays: { type: Number },
+              },
+              { _id: false }
+            ),
+          },
+          Done: {
+            type: new Schema(
+              {
+                greenDays: { type: Number },
+                orangeDays: { type: Number },
+                redDays: { type: Number },
+              },
+              { _id: false }
+            ),
+          },
+        },
+        { _id: false }
+      ),
+      default: undefined,
+    },
     statusHistory: [StatusHistorySchema],
   },
   { timestamps: true }

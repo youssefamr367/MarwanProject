@@ -4,7 +4,7 @@ import Product from "../models/productModel.js";
 class OrderController {
   static async createOrder(req, res) {
     try {
-      const { orderId, items } = req.body;
+      const { orderId, items, statusSla } = req.body;
       const out = [];
 
       for (const it of items) {
@@ -47,6 +47,7 @@ class OrderController {
       const order = await Order.create({
         orderId,
         items: out,
+        statusSla: statusSla || undefined,
         statusHistory: [{ status: "New", date: new Date() }],
       });
       res.status(201).json(order);
@@ -99,7 +100,7 @@ class OrderController {
       console.log("📋 Current order status:", order.status);
       console.log("📋 Current status history:", order.statusHistory);
 
-      // Update the order fields
+      // Update the order fields (allow updating statusSla as well)
       Object.assign(order, req.body);
 
       console.log("📋 New order status:", order.status);
