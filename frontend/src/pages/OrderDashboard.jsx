@@ -36,6 +36,44 @@ const OrderDashboard = () => {
     fetchOrders();
   }, [fetchOrders]);
 
+  // Determine color class based on how long the order has been
+  // in its current status, using backend-provided statusHistory dates.
+  const getStatusColor = (order) => {
+    if (!order) return "";
+    const status = order.status;
+    const hist = Array.isArray(order.statusHistory) ? order.statusHistory : [];
+    const sla = order.statusSla || {};
+
+    // Find the most recent entry for the current status
+    const lastForStatus = [...hist]
+      .filter((h) => h.status === status && h.date)
+      .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+
+    if (!lastForStatus) return "";
+
+    const ms = Date.now() - new Date(lastForStatus.date).getTime();
+    const diffDays = Math.floor(ms / (1000 * 60 * 60 * 24));
+
+    // pull custom thresholds if provided, else fallback to defaults
+    const byStatus = sla[status] || {};
+    const defaults = {
+      New: { greenDays: 1, orangeDays: 3, redDays: 7 },
+      manufacturing: { greenDays: 1, orangeDays: 45, redDays: 50 },
+      Done: { greenDays: 1, orangeDays: 10, redDays: 15 },
+    };
+    const th = {
+      greenDays: byStatus.greenDays ?? defaults[status]?.greenDays,
+      orangeDays: byStatus.orangeDays ?? defaults[status]?.orangeDays,
+      redDays: byStatus.redDays ?? defaults[status]?.redDays,
+    };
+
+    if (th.redDays != null && diffDays >= th.redDays) return "bg-red-200";
+    if (th.orangeDays != null && diffDays >= th.orangeDays)
+      return "bg-orange-200";
+    if (th.greenDays != null && diffDays < th.greenDays) return "bg-green-200";
+    return "";
+  };
+
   // Helper function to get the date when order entered current status
   const getStatusDate = (order) => {
     console.log(
@@ -64,20 +102,10 @@ const OrderDashboard = () => {
     return result;
   };
 
-  const getDiffDays = (date) => {
-    const a = new Date(date),
-      b = new Date();
-    return Math.floor((b - a) / (1000 * 60 * 60 * 24));
-  };
+  // (diff-days helper removed; using status history + SLA thresholds instead)
 
-  const isOverdue = (o) => {
-    const statusDate = getStatusDate(o);
-    const d = getDiffDays(statusDate);
-    if (o.status === "New") return d >= 7;
-    if (o.status === "manufacturing") return d > 50;
-    if (o.status === "Done") return d > 15;
-    return false;
-  };
+  // Overdue = red threshold breached according to getStatusColor
+  const isOverdue = (o) => getStatusColor(o) === "bg-red-200";
 
   const overdueCount = orders.filter(isOverdue).length;
 
@@ -173,7 +201,9 @@ const OrderDashboard = () => {
           {visible.map((o) => (
             <tr
               key={o._id}
-              className={isOverdue(o) ? "overdue" : ""}
+              className={`${isOverdue(o) ? "overdue" : ""} ${getStatusColor(
+                o
+              )}`}
               onClick={() => setSelectedOrder(o)} // ← open modal on click
             >
               <td>{o.orderId}</td>

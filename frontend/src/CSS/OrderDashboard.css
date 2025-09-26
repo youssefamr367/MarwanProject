@@ -109,9 +109,17 @@
 .orders-table tr.overdue {
   background: #fecaca;
 }
+.bg-red-200 {
+  background-color: #fecaca;
+}
+.bg-orange-200 {
+  background-color: #fed7aa;
+}
+.bg-green-200 {
+  background-color: #bbf7d0;
+}
 .no-results {
   text-align: center;
   color: #555;
   padding: 20px 0;
 }
-

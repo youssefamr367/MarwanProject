@@ -15,14 +15,9 @@ const AddOrderModal = ({ onClose, refreshList }) => {
     dehnat: [],
     supplierId: "",
   });
-  const [selection, setSelection] = useState({
-    fabrics: "",
-    eshra: "",
-    paintings: "",
-    marble: "",
-    dehnat: "",
-  });
   const [items, setItems] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [statusSla, setStatusSla] = useState({
     New: { greenDays: "", orangeDays: "", redDays: "" },
     manufacturing: { greenDays: "", orangeDays: "", redDays: "" },
@@ -69,41 +64,19 @@ const AddOrderModal = ({ onClose, refreshList }) => {
       dehnat: [],
       supplierId: "",
     });
-    setSelection({
-      fabrics: "",
-      eshra: "",
-      paintings: "",
-      marble: "",
-      dehnat: "",
-    });
   };
 
-  const handleSelectionChange = (e) => {
-    const { name, value } = e.target;
-    setSelection((s) => ({ ...s, [name]: value }));
-  };
-
-  const addCustomization = (name) => {
-    const val = selection[name];
-    if (!val) return;
-    setItemDraft((d) => ({
-      ...d,
-      [name]: d[name].includes(val) ? d[name] : [...d[name], val],
-    }));
-    setSelection((s) => ({ ...s, [name]: "" }));
-  };
-
-  const removeCustomization = (name, val) => {
-    setItemDraft((d) => ({
-      ...d,
-      [name]: d[name].filter((x) => x !== val),
-    }));
+  const handleMultiSelectChange = (field, e) => {
+    const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
+    setItemDraft((d) => ({ ...d, [field]: selected }));
   };
 
   const addItem = () => {
     const { productId, fabrics, supplierId } = itemDraft;
     if (!productId || fabrics.length === 0 || !supplierId) {
-      return alert("Product, at least one fabric, and a supplier are required.");
+      return alert(
+        "Product, at least one fabric, and a supplier are required."
+      );
     }
     setItems((i) => [...i, itemDraft]);
     setItemDraft({
@@ -121,6 +94,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
     if (!orderId || items.length === 0) {
       return alert("Order ID and at least one item are required.");
     }
+    setIsSubmitting(true);
     const payload = {
       orderId: parseInt(orderId, 10),
       items: items.map((i) => ({
@@ -147,6 +121,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
       const err = await res.json();
       alert("Error: " + (err.message || err.error));
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -162,6 +137,9 @@ const AddOrderModal = ({ onClose, refreshList }) => {
 
         {/* Order Basics */}
         <div className="section-card">
+          <div className="section-title-row">
+            <h4>Order Details</h4>
+          </div>
           <div className="form-grid two-col">
             <div>
               <label>Order ID</label>
@@ -190,8 +168,11 @@ const AddOrderModal = ({ onClose, refreshList }) => {
           </div>
         </div>
 
-        {/* Product Selection */}
+        {/* Product & Customizations */}
         <div className="section-card">
+          <div className="section-title-row">
+            <h4>Select Product & Customizations</h4>
+          </div>
           <label>Product</label>
           <select
             name="productId"
@@ -212,44 +193,20 @@ const AddOrderModal = ({ onClose, refreshList }) => {
                 (field) => (
                   <div key={field}>
                     <label>
-                      {field.charAt(0).toUpperCase() + field.slice(1)}
+                      {field.charAt(0).toUpperCase() + field.slice(1)}{" "}
+                      (multi-select)
                     </label>
-                    <div className="tag-input inline">
-                      <select
-                        name={field}
-                        value={selection[field]}
-                        onChange={handleSelectionChange}
-                      >
-                        <option value="">—</option>
-                        {selProd[field].map((opt) => (
-                          <option key={opt._id} value={opt._id}>
-                            {opt.name}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        className="add-item-btn"
-                        onClick={() => addCustomization(field)}
-                      >
-                        Add
-                      </button>
-                    </div>
-                    {itemDraft[field].length > 0 && (
-                      <div className="tag-list chips">
-                        {itemDraft[field].map((val) => (
-                          <span key={val} className="tag-chip">
-                            {selProd[field].find((o) => o._id === val)?.name ||
-                              val}
-                            <button
-                              className="remove-btn"
-                              onClick={() => removeCustomization(field, val)}
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <select
+                      multiple
+                      value={itemDraft[field]}
+                      onChange={(e) => handleMultiSelectChange(field, e)}
+                    >
+                      {selProd[field].map((opt) => (
+                        <option key={opt._id} value={opt._id}>
+                          {opt.name}
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 )
               )}
@@ -257,63 +214,79 @@ const AddOrderModal = ({ onClose, refreshList }) => {
           )}
         </div>
 
-        {/* SLA Section */}
+        {/* Advanced (optional) */}
         <div className="section-card">
           <div className="section-title-row">
-            <h4>⏱ Status SLA (Days, optional)</h4>
+            <h4>Advanced (optional)</h4>
+            <button
+              className="add-item-btn"
+              onClick={() => setShowAdvanced((v) => !v)}
+            >
+              {showAdvanced ? "Hide" : "Show"}
+            </button>
           </div>
-          <div className="sla-grid">
-            {["New", "manufacturing", "Done"].map((st) => (
-              <div key={st} className="sla-card">
-                <div className="sla-title">{st}</div>
-                <div className="sla-fields">
-                  <label>Green ≤</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={statusSla[st].greenDays}
-                    onChange={(e) =>
-                      setStatusSla((s) => ({
-                        ...s,
-                        [st]: { ...s[st], greenDays: e.target.value },
-                      }))
-                    }
-                  />
-                  <label>Orange ≤</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={statusSla[st].orangeDays}
-                    onChange={(e) =>
-                      setStatusSla((s) => ({
-                        ...s,
-                        [st]: { ...s[st], orangeDays: e.target.value },
-                      }))
-                    }
-                  />
-                  <label>Red ≤</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={statusSla[st].redDays}
-                    onChange={(e) =>
-                      setStatusSla((s) => ({
-                        ...s,
-                        [st]: { ...s[st], redDays: e.target.value },
-                      }))
-                    }
-                  />
+          {showAdvanced && (
+            <div className="sla-grid">
+              {["New", "manufacturing", "Done"].map((st) => (
+                <div key={st} className="sla-card">
+                  <div className="sla-title">{st}</div>
+                  <div className="sla-fields">
+                    <label>Green ≤</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={statusSla[st].greenDays}
+                      onChange={(e) =>
+                        setStatusSla((s) => ({
+                          ...s,
+                          [st]: { ...s[st], greenDays: e.target.value },
+                        }))
+                      }
+                    />
+                    <label>Orange ≤</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={statusSla[st].orangeDays}
+                      onChange={(e) =>
+                        setStatusSla((s) => ({
+                          ...s,
+                          [st]: { ...s[st], orangeDays: e.target.value },
+                        }))
+                      }
+                    />
+                    <label>Red ≤</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={statusSla[st].redDays}
+                      onChange={(e) =>
+                        setStatusSla((s) => ({
+                          ...s,
+                          [st]: { ...s[st], redDays: e.target.value },
+                        }))
+                      }
+                    />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Items Section */}
         <div className="section-card">
           <div className="section-title-row">
-            <h4>Items</h4>
-            <button className="add-item-btn" onClick={addItem}>
+            <h4>Items ({items.length})</h4>
+            <button
+              className="add-item-btn"
+              onClick={addItem}
+              disabled={
+                !itemDraft.productId ||
+                itemDraft.fabrics.length === 0 ||
+                !itemDraft.supplierId
+              }
+            >
               + Add Item
             </button>
           </div>
@@ -335,7 +308,20 @@ const AddOrderModal = ({ onClose, refreshList }) => {
                       Supplier:{" "}
                       {suppliers.find((s) => s._id === it.supplierId)?.name}
                     </div>
+                    <div className="muted">
+                      Fabrics: {it.fabrics.length}, Eshra: {it.eshra.length},
+                      Paintings: {it.paintings.length}, Marble:{" "}
+                      {it.marble.length}, Dehnat: {it.dehnat.length}
+                    </div>
                   </div>
+                  <button
+                    className="remove-btn"
+                    onClick={() =>
+                      setItems((arr) => arr.filter((_, idx) => idx !== i))
+                    }
+                  >
+                    Remove
+                  </button>
                 </li>
               ))}
             </ul>
@@ -344,8 +330,15 @@ const AddOrderModal = ({ onClose, refreshList }) => {
 
         {/* Footer Buttons */}
         <div className="modal-buttons">
-          <button onClick={handleSubmit}>💾 Save Order</button>
-          <button onClick={onClose}>Cancel</button>
+          <button
+            onClick={handleSubmit}
+            disabled={!orderId || items.length === 0 || isSubmitting}
+          >
+            {isSubmitting ? "Saving…" : "💾 Save Order"}
+          </button>
+          <button onClick={onClose} disabled={isSubmitting}>
+            Cancel
+          </button>
         </div>
       </div>
     </div>

@@ -46,7 +46,7 @@ const getStatusColor = (order) => {
   if (th.redDays != null && diffDays >= th.redDays) return "bg-red-200";
   if (th.orangeDays != null && diffDays >= th.orangeDays)
     return "bg-orange-200";
-  if (th.greenDays != null && diffDays >= th.greenDays) return "bg-green-200";
+  if (th.greenDays != null && diffDays < th.greenDays) return "bg-green-200";
   return "";
 };
 
