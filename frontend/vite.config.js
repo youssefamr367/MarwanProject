@@ -9,4 +9,9 @@ export default defineConfig({
       "/api": "http://localhost:7000",
     },
   },
+  build: {
+    outDir: "dist",
+    assetsDir: "assets",
+  },
+  base: "/",
 });
