@@ -1,0 +1,9 @@
+{
+  "name": "marwanproject-api",
+  "version": "1.0.0",
+  "description": "Serverless API wrapper for MarwanProject",
+  "type": "module",
+  "main": "index.js",
+  "license": "ISC",
+  "dependencies": {}
+}
