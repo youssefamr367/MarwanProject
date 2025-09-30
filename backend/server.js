@@ -21,7 +21,7 @@ app.use(express.json());
 const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
-      ? process.env.FRONTEND_URL || "https://your-vercel-app.vercel.app"
+      ? [process.env.FRONTEND_URL, "https://*.vercel.app"]
       : "http://localhost:5173",
   credentials: true,
 };
