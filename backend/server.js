@@ -71,17 +71,33 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("🔗 MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+// Lazy DB connector for serverless environments
+export async function ensureDbConnection() {
+  try {
+    if (mongoose.connection.readyState === 1) return;
+    const uri = process.env.MONGO_URI;
+    if (!uri) {
+      console.warn(
+        "MONGO_URI not set — skipping DB connection (expected in some environments)"
+      );
+      return;
+    }
+    await mongoose.connect(uri);
+    console.log("🔗 MongoDB connected");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err);
+    throw err;
+  }
+}
 
 // Export app for Vercel
 export default app;
 
-// Start server only if not in Vercel environment
-if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+// Start server only if running locally (not on Vercel)
+if (!process.env.VERCEL) {
+  // Try to connect DB in local/dev mode so the app works when run directly
+  ensureDbConnection().catch(() => {});
+
   const PORT = process.env.PORT || 5000;
   app.listen(PORT, () => {
     console.log(`🚀 Server running at http://localhost:${PORT}`);
