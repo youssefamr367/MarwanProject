@@ -11,18 +11,29 @@ export default async function handler(req, res) {
       ensureDbConnection = mod.ensureDbConnection;
     }
 
-    if (!dbInitialized) {
+    // Always try to ensure DB connection for each request in serverless
+    // This handles cold starts and connection drops
+    try {
       await ensureDbConnection();
-      dbInitialized = true;
+    } catch (dbErr) {
+      console.error("DB connection failed:", dbErr);
+      res.setHeader("Content-Type", "application/json");
+      return res.status(500).json({
+        error: "Database connection failed",
+        message: "Unable to connect to database. Please try again later.",
+        details:
+          process.env.NODE_ENV === "development" ? dbErr.message : undefined,
+        timestamp: new Date().toISOString(),
+      });
     }
   } catch (err) {
     console.error("Import/DB init failed:", err && err.stack ? err.stack : err);
     res.setHeader("Content-Type", "application/json");
     return res.status(500).json({
       error: err.message || "Import/DB initialization failed",
-      message:
-        "Database connection failed. Please check MONGO_URI environment variable.",
+      message: "Server initialization failed. Please check configuration.",
       stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+      timestamp: new Date().toISOString(),
     });
   }
 

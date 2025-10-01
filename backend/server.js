@@ -74,7 +74,34 @@ if (process.env.NODE_ENV === "production") {
 // Lazy DB connector for serverless environments
 export async function ensureDbConnection() {
   try {
-    if (mongoose.connection.readyState === 1) return;
+    // Check if already connected
+    if (mongoose.connection.readyState === 1) {
+      console.log("🔗 MongoDB already connected");
+      return;
+    }
+
+    // Check if connection is in progress
+    if (mongoose.connection.readyState === 2) {
+      console.log("⏳ MongoDB connection in progress, waiting...");
+      // Wait for connection to complete
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error("Connection timeout"));
+        }, 10000);
+
+        mongoose.connection.once("connected", () => {
+          clearTimeout(timeout);
+          resolve();
+        });
+
+        mongoose.connection.once("error", (err) => {
+          clearTimeout(timeout);
+          reject(err);
+        });
+      });
+      return;
+    }
+
     const uri = process.env.MONGO_URI;
     if (!uri) {
       // In production (Vercel) we must have a Mongo URI configured. Fail fast so
@@ -91,7 +118,27 @@ export async function ensureDbConnection() {
       );
       return;
     }
-    await mongoose.connect(uri);
+    // Set up connection event handlers
+    mongoose.connection.on("connected", () => {
+      console.log("🔗 MongoDB connected successfully");
+    });
+
+    mongoose.connection.on("error", (err) => {
+      console.error("❌ MongoDB connection error:", err);
+    });
+
+    mongoose.connection.on("disconnected", () => {
+      console.log("🔌 MongoDB disconnected");
+    });
+
+    await mongoose.connect(uri, {
+      // Serverless-specific options
+      maxPoolSize: 1, // Maintain only one connection in serverless
+      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      bufferCommands: false, // Disable mongoose buffering
+      bufferMaxEntries: 0, // Disable mongoose buffering
+    });
     console.log("🔗 MongoDB connected");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
