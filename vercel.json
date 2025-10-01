@@ -9,6 +9,11 @@
     { "src": "api/**/*.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/assets/(.*)", "dest": "/frontend/assets/$1" },
+    { "src": "/vite.svg", "dest": "/frontend/vite.svg" },
+    { "src": "/favicon.ico", "dest": "/frontend/favicon.ico" },
+    { "src": "/manifest.json", "dest": "/frontend/manifest.json" },
+    { "src": "/robots.txt", "dest": "/frontend/robots.txt" },
     { "src": "/api/(.*)", "dest": "/api/$1.js" },
     { "handle": "filesystem" },
     { "src": "/api/root", "dest": "/api/root.js" },
