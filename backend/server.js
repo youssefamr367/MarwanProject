@@ -142,7 +142,30 @@ export async function ensureDbConnection() {
     console.log("🔗 MongoDB connected");
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
-    throw err;
+    console.error("❌ Error details:", {
+      name: err.name,
+      message: err.message,
+      code: err.code,
+      stack: err.stack,
+    });
+
+    // Provide more specific error information
+    let errorMessage = err.message;
+    if (err.message.includes("ENOTFOUND")) {
+      errorMessage = "MongoDB host not found. Check your connection string.";
+    } else if (err.message.includes("authentication")) {
+      errorMessage = "MongoDB authentication failed. Check username/password.";
+    } else if (err.message.includes("timeout")) {
+      errorMessage = "MongoDB connection timeout. Check network access.";
+    } else if (err.message.includes("ECONNREFUSED")) {
+      errorMessage =
+        "MongoDB connection refused. Check if the service is running.";
+    }
+
+    const enhancedError = new Error(errorMessage);
+    enhancedError.originalError = err;
+    enhancedError.code = err.code;
+    throw enhancedError;
   }
 }
 
