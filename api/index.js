@@ -20,16 +20,29 @@ export default async function handler(req, res) {
     res.setHeader("Content-Type", "application/json");
     return res
       .status(500)
-      .send(JSON.stringify({ error: err.message || "Import/DB initialization failed", stack: err.stack }));
+      .send(
+        JSON.stringify({
+          error: err.message || "Import/DB initialization failed",
+          stack: err.stack,
+        })
+      );
   }
 
   try {
     return app(req, res);
   } catch (err) {
-    console.error("Unhandled error in app handler:", err && err.stack ? err.stack : err);
+    console.error(
+      "Unhandled error in app handler:",
+      err && err.stack ? err.stack : err
+    );
     res.setHeader("Content-Type", "application/json");
     return res
       .status(500)
-      .send(JSON.stringify({ error: err.message || "Internal server error", stack: err.stack }));
+      .send(
+        JSON.stringify({
+          error: err.message || "Internal server error",
+          stack: err.stack,
+        })
+      );
   }
 }
