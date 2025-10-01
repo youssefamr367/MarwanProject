@@ -18,14 +18,12 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error("Import/DB init failed:", err && err.stack ? err.stack : err);
     res.setHeader("Content-Type", "application/json");
-    return res
-      .status(500)
-      .send(
-        JSON.stringify({
-          error: err.message || "Import/DB initialization failed",
-          stack: err.stack,
-        })
-      );
+    return res.status(500).json({
+      error: err.message || "Import/DB initialization failed",
+      message:
+        "Database connection failed. Please check MONGO_URI environment variable.",
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
   }
 
   try {
@@ -36,13 +34,10 @@ export default async function handler(req, res) {
       err && err.stack ? err.stack : err
     );
     res.setHeader("Content-Type", "application/json");
-    return res
-      .status(500)
-      .send(
-        JSON.stringify({
-          error: err.message || "Internal server error",
-          stack: err.stack,
-        })
-      );
+    return res.status(500).json({
+      error: err.message || "Internal server error",
+      message: "An unexpected error occurred while processing your request.",
+      stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
+    });
   }
 }
