@@ -76,11 +76,19 @@ export async function ensureDbConnection() {
   try {
     if (mongoose.connection.readyState === 1) return;
     const uri = process.env.MONGO_URI;
-    if (!uri) {
-      console.warn(
-        "MONGO_URI not set — skipping DB connection (expected in some environments)"
-      );
-      return;
+      if (!uri) {
+        // In production (Vercel) we must have a Mongo URI configured. Fail fast so
+        // the deployment logs show a clear error and the frontend receives a 500.
+        if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+          const msg = "MONGO_URI not set in environment - cannot connect to database";
+          console.error("\u274c", msg);
+          throw new Error(msg);
+        }
+        // Local/dev: warn but allow running without DB for purely frontend work.
+        console.warn(
+          "MONGO_URI not set — skipping DB connection (allowed in local dev)"
+        );
+        return;
     }
     await mongoose.connect(uri);
     console.log("🔗 MongoDB connected");
