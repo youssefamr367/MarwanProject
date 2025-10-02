@@ -55,7 +55,6 @@ export default async function handler(req, res) {
           serverSelectionTimeoutMS: 5000,
           socketTimeoutMS: 45000,
           bufferCommands: false,
-          bufferMaxEntries: 0,
         };
 
         // Try connection with timeout
