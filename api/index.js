@@ -16,7 +16,10 @@ export default async function handler(req, res) {
     try {
       await ensureDbConnection();
     } catch (dbErr) {
-      console.error("DB connection failed:", dbErr && dbErr.stack ? dbErr.stack : dbErr);
+      console.error(
+        "DB connection failed:",
+        dbErr && dbErr.stack ? dbErr.stack : dbErr
+      );
       res.setHeader("Content-Type", "application/json");
       return res.status(500).json({
         error: "Database connection failed",
