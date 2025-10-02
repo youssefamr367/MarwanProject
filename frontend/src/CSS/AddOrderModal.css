@@ -264,3 +264,18 @@
   border-top: 1px solid var(--aom-border);
   margin-top: 12px;
 }
+.aom-textarea {
+  width: 100%;
+  min-height: 120px;   /* static size */
+  max-height: 120px;   /* prevent resize beyond this */
+  resize: none;        /* disable manual resizing */
+  padding: 10px 12px;
+  border: 1px solid var(--aom-border);
+  border-radius: 8px;
+  font-size: var(--aom-md);
+  outline: none;
+  line-height: 1.4;
+}
+.aom-textarea:focus {
+  border-color: var(--aom-primary);
+}
