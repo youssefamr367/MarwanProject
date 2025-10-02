@@ -16,13 +16,17 @@ export default async function handler(req, res) {
     try {
       await ensureDbConnection();
     } catch (dbErr) {
-      console.error("DB connection failed:", dbErr);
+      console.error("DB connection failed:", dbErr && dbErr.stack ? dbErr.stack : dbErr);
       res.setHeader("Content-Type", "application/json");
       return res.status(500).json({
         error: "Database connection failed",
         message: "Unable to connect to database. Please try again later.",
-        details:
-          process.env.NODE_ENV === "development" ? dbErr.message : undefined,
+        // Temporary debug info — remove after fix
+        debug: {
+          mongoUriPresent: !!process.env.MONGO_URI,
+          dbErrorMessage: dbErr && dbErr.message,
+          dbErrorStack: dbErr && dbErr.stack,
+        },
         timestamp: new Date().toISOString(),
       });
     }
