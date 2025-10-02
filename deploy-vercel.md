@@ -2,7 +2,7 @@
 
 ## 1. Prepare Your Repository
 
-```bash
+```bashdd
 # Make sure all changes are committed
 git add .
 git commit -m "Configure for Vercel deployment"
