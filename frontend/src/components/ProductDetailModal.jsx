@@ -1,111 +1,79 @@
-import { useState, useEffect } from "react";
-import "../CSS/ProductDetailModal.css";
+import React from "react";
+import "../CSS/AddOrderModal.css"; // reuse aom-* styles
 
 const ProductDetailModal = ({ product, onClose }) => {
-  const [details, setDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProd = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch(
-          `/api/Product/GetbyProductId/${product.productId}`
-        );
-        const json = await res.json();
-        if (res.ok) setDetails(json);
-      } catch (error) {
-        console.error("Failed to fetch product details:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProd();
-  }, [product.productId]);
-
-  if (loading) {
-    return (
-      <div className="modal-backdrop" onClick={onClose}>
-        <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-          <div className="loading">Loading product details...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!details) return null;
+  if (!product) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
-        <h3>Product #{details.productId}</h3>
-
-        <div className="product-info">
-          <p>
-            <strong>Name:</strong> {details.name}
-          </p>
-          <p>
-            <strong>Description:</strong> {details.description}
-          </p>
+    <div className="aom-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="aom-modal" role="dialog" aria-modal="true" aria-labelledby="aom-title">
+        {/* Header */}
+        <div className="aom-header">
+          <h3 id="aom-title">🛍 Product #{product.productId}</h3>
+          <button type="button" className="aom-close" onClick={onClose}>
+            ×
+          </button>
         </div>
 
-        <div className="material-category fabrics">
-          <h4>Fabrics</h4>
-          <ul className="material-list">
-            {details.fabrics.map((f, index) => (
-              <li key={index} className="material-item">
-                {f.name}
-              </li>
+        {/* Product Info */}
+        <section className="aom-card">
+          <div className="aom-field">
+            <label>Name</label>
+            <div className="aom-muted">{product.name || "—"}</div>
+          </div>
+
+          <div className="aom-field">
+            <label>Description</label>
+            <div className="aom-muted">{product.description || "—"}</div>
+          </div>
+
+          <div className="aom-field">
+            <label>Supplier</label>
+            <div className="aom-muted">
+              {product.supplier?.name || product.supplierId || "—"}
+            </div>
+          </div>
+
+          {product.images && (
+            <div className="aom-field">
+              <label>Image</label>
+              <img
+                src={product.images}
+                alt={product.name}
+                style={{ maxWidth: "100%", borderRadius: "6px" }}
+              />
+            </div>
+          )}
+        </section>
+
+        {/* Customizations */}
+        <section className="aom-card">
+          <div className="aom-card-title">Customizations</div>
+          <div className="aom-grid aom-2">
+            {["fabrics", "eshra", "paintings", "marble", "dehnat"].map((field) => (
+              <div key={field} className="aom-field">
+                <label>{field[0].toUpperCase() + field.slice(1)}</label>
+                {product[field]?.length ? (
+                  <div className="aom-chips">
+                    {product[field].map((opt) => (
+                      <span key={opt._id || opt} className="aom-chip">
+                        {opt.name || opt}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="aom-muted">None</div>
+                )}
+              </div>
             ))}
-          </ul>
-        </div>
+          </div>
+        </section>
 
-        <div className="material-category eshra">
-          <h4>Eshra</h4>
-          <ul className="material-list">
-            {details.eshra.map((e, index) => (
-              <li key={index} className="material-item">
-                {e.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="material-category paintings">
-          <h4>Paintings</h4>
-          <ul className="material-list">
-            {details.paintings.map((p, index) => (
-              <li key={index} className="material-item">
-                {p.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="material-category marble">
-          <h4>Marble</h4>
-          <ul className="material-list">
-            {details.marble.map((m, index) => (
-              <li key={index} className="material-item">
-                {m.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="material-category dehnat">
-          <h4>Dehnat</h4>
-          <ul className="material-list">
-            {details.dehnat.map((d, index) => (
-              <li key={index} className="material-item">
-                {d.name}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="modal-buttons">
-          <button onClick={onClose}>Close</button>
+        {/* Footer */}
+        <div className="aom-footer">
+          <button type="button" className="aom-ghost" onClick={onClose}>
+            ✖️ Close
+          </button>
         </div>
       </div>
     </div>

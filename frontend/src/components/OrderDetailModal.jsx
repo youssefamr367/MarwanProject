@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ItemDetailModal from "./ItemDetailModal.jsx";
-import "../CSS/OrderDetailModal.css";
+import "../CSS/AddOrderModal.css"; // reuse the same aom-* CSS
 
 const OrderDetailModal = ({ order, onClose, refreshList }) => {
   const [selectedItem, setSelectedItem] = useState(null);
@@ -30,9 +30,7 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
 
   const deleteOrder = async () => {
     if (!window.confirm("Delete this order?")) return;
-    await fetch(`/api/Order/deleteByOrderId/${order.orderId}`, {
-      method: "DELETE",
-    });
+    await fetch(`/api/Order/deleteByOrderId/${order.orderId}`, { method: "DELETE" });
     refreshList();
     onClose();
   };
@@ -63,15 +61,14 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
     await refreshList();
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+  const formatDate = (dateString) =>
+    new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
 
   const actions = [];
   if (order.status === "New") {
@@ -88,43 +85,39 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
 
   return (
     <>
-      <div className="modal-backdrop" onClick={onClose}>
-        <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+      <div className="aom-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+        <div className="aom-modal" role="dialog" aria-modal="true" aria-labelledby="aom-title">
           {/* Header */}
-          <div className="modal-header">
-            <h3>📦 Order #{order.orderId}</h3>
-            <button className="close-btn" onClick={onClose}>×</button>
+          <div className="aom-header">
+            <h3 id="aom-title">📦 Order #{order.orderId}</h3>
+            <button type="button" className="aom-close" onClick={onClose}>×</button>
           </div>
 
-          {/* Status */}
-          <p>
-            <strong>Current Status: </strong>
-            <span className={`status-badge ${order.status.toLowerCase()}`}>
-              {order.status}
-            </span>
-          </p>
+          {/* Current Status */}
+          <section className="aom-card">
+            <div className="aom-field">
+              <label>Current Status</label>
+              <div>
+                <span className={`aom-chip`}>{order.status}</span>
+              </div>
+            </div>
+          </section>
 
           {/* SLA Section */}
-          <div className="section-card">
-            <div className="section-title-row">
-              <h4>⏱ Per-Order SLA (Days)</h4>
-              <button className="small-btn" onClick={saveSla}>💾 Save SLA</button>
-            </div>
-            <div className="sla-grid">
+          <section className="aom-card">
+            <div className="aom-card-title">⏱ Per-Order SLA (Days)</div>
+            <div className="aom-grid aom-3">
               {["New", "manufacturing", "Done"].map((st) => (
-                <div key={st} className="sla-card">
-                  <div className="sla-title">{st}</div>
-                  <div className="sla-fields">
+                <div key={st} className="aom-sla">
+                  <div className="aom-sla-title">{st}</div>
+                  <div className="aom-sla-grid">
                     <label>Green ≤</label>
                     <input
                       type="number"
                       min="0"
                       value={slaDraft[st].greenDays}
                       onChange={(e) =>
-                        setSlaDraft((s) => ({
-                          ...s,
-                          [st]: { ...s[st], greenDays: e.target.value },
-                        }))
+                        setSlaDraft((s) => ({ ...s, [st]: { ...s[st], greenDays: e.target.value } }))
                       }
                     />
                     <label>Orange ≤</label>
@@ -133,10 +126,7 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
                       min="0"
                       value={slaDraft[st].orangeDays}
                       onChange={(e) =>
-                        setSlaDraft((s) => ({
-                          ...s,
-                          [st]: { ...s[st], orangeDays: e.target.value },
-                        }))
+                        setSlaDraft((s) => ({ ...s, [st]: { ...s[st], orangeDays: e.target.value } }))
                       }
                     />
                     <label>Red ≤</label>
@@ -145,84 +135,77 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
                       min="0"
                       value={slaDraft[st].redDays}
                       onChange={(e) =>
-                        setSlaDraft((s) => ({
-                          ...s,
-                          [st]: { ...s[st], redDays: e.target.value },
-                        }))
+                        setSlaDraft((s) => ({ ...s, [st]: { ...s[st], redDays: e.target.value } }))
                       }
                     />
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+            <div className="aom-actions-left">
+              <button type="button" className="aom-btn" onClick={saveSla}>💾 Save SLA</button>
+            </div>
+          </section>
 
           {/* Status History */}
           {order.statusHistory?.length > 0 && (
-            <div className="status-history">
-              <h4>📊 Status History</h4>
-              <div className="status-timeline">
+            <section className="aom-card">
+              <div className="aom-card-title">📊 Status History</div>
+              <div className="aom-items">
                 {order.statusHistory
                   .sort((a, b) => new Date(b.date) - new Date(a.date))
                   .map((entry, index) => (
-                    <div
-                      key={index}
-                      className={`status-entry ${
-                        entry.status === order.status ? "current" : ""
-                      }`}
-                      data-status={entry.status}
-                    >
-                      <div className="status-name">{entry.status}</div>
-                      <div className="status-date">{formatDate(entry.date)}</div>
+                    <div key={index} className="aom-item">
+                      <div className="aom-item-main">
+                        <strong>{entry.status}</strong>
+                        <div className="aom-muted">{formatDate(entry.date)}</div>
+                      </div>
                     </div>
                   ))}
               </div>
-            </div>
+            </section>
           )}
 
           {/* Items */}
-          <div className="section-card">
-            <h4>📋 Items</h4>
-            <ul className="product-list">
+          <section className="aom-card">
+            <div className="aom-card-title">📋 Items</div>
+            <ul className="aom-items">
               {order.items.map((item, idx) => (
-                <li key={idx}>
+                <li key={idx} className="aom-item">
+                  <div className="aom-item-main">
+                    {item.product?.name} (#{item.product?.productId})
+                  </div>
                   <button
-                    className="link-button"
+                    type="button"
+                    className="aom-link"
                     onClick={() => setSelectedItem(item)}
                   >
-                    {item.product?.name} (#{item.product?.productId})
+                    View
                   </button>
                 </li>
               ))}
             </ul>
-          </div>
+          </section>
 
-          {/* Footer Buttons */}
-          <div className="modal-buttons">
+          {/* Footer */}
+          <div className="aom-footer">
             {actions.map((a) => (
               <button
                 key={a.next}
-                className="action-btn"
+                className="aom-primary"
                 onClick={() => updateStatus(a.next)}
               >
                 {a.label}
               </button>
             ))}
-
-            <button className="action-btn delete-btn" onClick={deleteOrder}>
-              🗑️ Delete
-            </button>
-
-            <button onClick={onClose}>✖️ Close</button>
+            <button type="button" className="aom-btn" onClick={deleteOrder}>🗑️ Delete</button>
+            <button type="button" className="aom-ghost" onClick={onClose}>✖️ Close</button>
           </div>
         </div>
       </div>
 
       {selectedItem && (
-        <ItemDetailModal
-          item={selectedItem}
-          onClose={() => setSelectedItem(null)}
-        />
+        <ItemDetailModal item={selectedItem} onClose={() => setSelectedItem(null)} />
       )}
     </>
   );
