@@ -81,22 +81,25 @@ const ProductModal = ({ product, onClose, refreshList }) => {
     }));
   };
 
+  // ✅ Option A: Close modal only if save succeeded
   const handleSave = async () => {
     const payload = {
       ...form,
       supplier: sel.supplier,
     };
+
     const res = await fetch(`/api/Product/updateByProductId/${product.productId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+
     if (res.ok) {
-      refreshList();
-      onClose();
+      await refreshList();
+      onClose(); // closes only if success
     } else {
-      const err = await res.json();
-      alert("Error: " + err.message);
+      const err = await res.json().catch(() => ({}));
+      alert("Error: " + (err.message || res.status));
     }
   };
 
