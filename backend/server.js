@@ -73,6 +73,7 @@ if (process.env.NODE_ENV === "production") {
 }
 // Cached database connection promise
 let cachedDbPromise = null;
+let lastConnectionError = null;
 
 // Lazy DB connector for serverless environments
 export async function ensureDbConnection() {
@@ -86,6 +87,7 @@ export async function ensureDbConnection() {
     if (process.env.VERCEL || process.env.NODE_ENV === "production") {
       const msg = "MONGO_URI not set in environment - cannot connect to database";
       console.error("\u274c", msg);
+      lastConnectionError = msg;
       throw new Error(msg);
     }
     console.warn("MONGO_URI not set — skipping DB connection (allowed in local dev)");
@@ -114,10 +116,25 @@ export async function ensureDbConnection() {
 
     await cachedDbPromise;
     console.log("🔗 MongoDB connected successfully");
+    lastConnectionError = null;
     return cachedDbPromise;
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
+    console.error("❌ Error details:", {
+      name: err.name,
+      message: err.message,
+      code: err.code,
+      stack: err.stack,
+    });
     cachedDbPromise = null; // Reset cache on initial connection error
+
+    // Cache the error for debugging
+    lastConnectionError = {
+      message: err.message,
+      name: err.name,
+      code: err.code,
+      stack: err.stack,
+    };
 
     // Provide more specific error information
     let errorMessage = err.message;
@@ -136,6 +153,11 @@ export async function ensureDbConnection() {
     enhancedError.code = err.code;
     throw enhancedError;
   }
+}
+
+// Export error cache for debugging endpoint
+export function getLastConnectionError() {
+  return lastConnectionError;
 }
 
 // Export app for Vercel

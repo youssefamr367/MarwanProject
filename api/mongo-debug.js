@@ -81,6 +81,8 @@ export default async function handler(req, res) {
         debugInfo.tests.connection = "failed";
         debugInfo.tests.connectionError = err.message;
         debugInfo.tests.connectionErrorType = err.name;
+        debugInfo.tests.connectionErrorStack = err.stack;
+        debugInfo.tests.connectionErrorCode = err.code;
 
         // Check if it's a network error
         if (

@@ -1,6 +1,7 @@
 let dbInitialized = false;
 let app = null;
 let ensureDbConnection = null;
+let getLastConnectionError = null;
 
 export default async function handler(req, res) {
   try {
@@ -9,6 +10,7 @@ export default async function handler(req, res) {
       const mod = await import("../backend/server.js");
       app = mod.default;
       ensureDbConnection = mod.ensureDbConnection;
+      getLastConnectionError = mod.getLastConnectionError;
     }
 
     // Always try to ensure DB connection for each request in serverless
@@ -29,6 +31,8 @@ export default async function handler(req, res) {
           mongoUriPresent: !!process.env.MONGO_URI,
           dbErrorMessage: dbErr && dbErr.message,
           dbErrorStack: dbErr && dbErr.stack,
+          lastConnectionErrorDetails:
+            getLastConnectionError && getLastConnectionError(),
         },
         timestamp: new Date().toISOString(),
       });
