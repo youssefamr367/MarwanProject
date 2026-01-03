@@ -136,36 +136,28 @@ async function setupRoutes() {
   try {
     console.log("📦 Attempting to load routes...");
 
-    const ProductRoutes = (await import("../backend/routes/ProductRoute.js"))
-      .default;
+    const ProductRoutes = (await import("./routes/ProductRoute.js")).default;
     console.log("✅ ProductRoute loaded");
 
-    const OrderRoutes = (await import("../backend/routes/OrderRoute.js"))
-      .default;
+    const OrderRoutes = (await import("./routes/OrderRoute.js")).default;
     console.log("✅ OrderRoute loaded");
 
-    const SupplierRoutes = (await import("../backend/routes/SupplierRoute.js"))
-      .default;
+    const SupplierRoutes = (await import("./routes/SupplierRoute.js")).default;
     console.log("✅ SupplierRoute loaded");
 
-    const FabricRoutes = (await import("../backend/routes/FabricRoute.js"))
-      .default;
+    const FabricRoutes = (await import("./routes/FabricRoute.js")).default;
     console.log("✅ FabricRoute loaded");
 
-    const EshraRoutes = (await import("../backend/routes/EshraRoute.js"))
-      .default;
+    const EshraRoutes = (await import("./routes/EshraRoute.js")).default;
     console.log("✅ EshraRoute loaded");
 
-    const PaintingRoutes = (await import("../backend/routes/PaintingRoute.js"))
-      .default;
+    const PaintingRoutes = (await import("./routes/PaintingRoute.js")).default;
     console.log("✅ PaintingRoute loaded");
 
-    const MarbleRoutes = (await import("../backend/routes/MarbleRoute.js"))
-      .default;
+    const MarbleRoutes = (await import("./routes/MarbleRoute.js")).default;
     console.log("✅ MarbleRoute loaded");
 
-    const DehnatRoutes = (await import("../backend/routes/DehnatRoute.js"))
-      .default;
+    const DehnatRoutes = (await import("./routes/DehnatRoute.js")).default;
     console.log("✅ DehnatRoute loaded");
 
     app.use("/api/Product", ProductRoutes);
