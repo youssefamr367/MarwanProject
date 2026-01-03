@@ -71,82 +71,53 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
+// Cached database connection promise
+let cachedDbPromise = null;
+
 // Lazy DB connector for serverless environments
 export async function ensureDbConnection() {
+  if (cachedDbPromise) {
+    console.log("🔗 Using cached MongoDB connection promise");
+    return cachedDbPromise;
+  }
+
+  const uri = process.env.MONGO_URI;
+  if (!uri) {
+    if (process.env.VERCEL || process.env.NODE_ENV === "production") {
+      const msg = "MONGO_URI not set in environment - cannot connect to database";
+      console.error("\u274c", msg);
+      throw new Error(msg);
+    }
+    console.warn("MONGO_URI not set — skipping DB connection (allowed in local dev)");
+    return;
+  }
+
+  // Set up connection event handlers
+  mongoose.connection.on("error", (err) => {
+    console.error("❌ MongoDB connection error:", err);
+    cachedDbPromise = null; // Reset cache on error
+  });
+
+  mongoose.connection.on("disconnected", () => {
+    console.log("🔌 MongoDB disconnected");
+    cachedDbPromise = null; // Reset cache on disconnect
+  });
+
   try {
-    // Check if already connected
-    if (mongoose.connection.readyState === 1) {
-      console.log("🔗 MongoDB already connected");
-      return;
-    }
-
-    // Check if connection is in progress
-    if (mongoose.connection.readyState === 2) {
-      console.log("⏳ MongoDB connection in progress, waiting...");
-      // Wait for connection to complete
-      await new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error("Connection timeout"));
-        }, 10000);
-
-        mongoose.connection.once("connected", () => {
-          clearTimeout(timeout);
-          resolve();
-        });
-
-        mongoose.connection.once("error", (err) => {
-          clearTimeout(timeout);
-          reject(err);
-        });
-      });
-      return;
-    }
-
-    const uri = process.env.MONGO_URI;
-    if (!uri) {
-      // In production (Vercel) we must have a Mongo URI configured. Fail fast so
-      // the deployment logs show a clear error and the frontend receives a 500.
-      if (process.env.VERCEL || process.env.NODE_ENV === "production") {
-        const msg =
-          "MONGO_URI not set in environment - cannot connect to database";
-        console.error("\u274c", msg);
-        throw new Error(msg);
-      }
-      // Local/dev: warn but allow running without DB for purely frontend work.
-      console.warn(
-        "MONGO_URI not set — skipping DB connection (allowed in local dev)"
-      );
-      return;
-    }
-    // Set up connection event handlers
-    mongoose.connection.on("connected", () => {
-      console.log("🔗 MongoDB connected successfully");
+    console.log("🔌 Creating new MongoDB connection");
+    cachedDbPromise = mongoose.connect(uri, {
+      maxPoolSize: 1,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+      bufferCommands: false,
     });
 
-    mongoose.connection.on("error", (err) => {
-      console.error("❌ MongoDB connection error:", err);
-    });
-
-    mongoose.connection.on("disconnected", () => {
-      console.log("🔌 MongoDB disconnected");
-    });
-
-    await mongoose.connect(uri, {
-      // Serverless-specific options
-      maxPoolSize: 1, // Maintain only one connection in serverless
-      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      bufferCommands: false, // Disable mongoose buffering
-    });
-    console.log("🔗 MongoDB connected");
+    await cachedDbPromise;
+    console.log("🔗 MongoDB connected successfully");
+    return cachedDbPromise;
   } catch (err) {
     console.error("❌ MongoDB connection error:", err);
-    console.error("❌ Error details:", {
-      name: err.name,
-      message: err.message,
-      code: err.code,
-      stack: err.stack,
-    });
+    cachedDbPromise = null; // Reset cache on initial connection error
 
     // Provide more specific error information
     let errorMessage = err.message;
@@ -157,8 +128,7 @@ export async function ensureDbConnection() {
     } else if (err.message.includes("timeout")) {
       errorMessage = "MongoDB connection timeout. Check network access.";
     } else if (err.message.includes("ECONNREFUSED")) {
-      errorMessage =
-        "MongoDB connection refused. Check if the service is running.";
+      errorMessage = "MongoDB connection refused. Check if the service is running.";
     }
 
     const enhancedError = new Error(errorMessage);
