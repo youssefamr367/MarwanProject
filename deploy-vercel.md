@@ -8,7 +8,7 @@ git add .
 git commit -m "Configure for Vercel deployment"
 git push origin main
 ```
-
+bb
 ## 2. Deploy to Vercel
 
 ### Option A: Using Vercel CLI
