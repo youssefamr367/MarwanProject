@@ -103,7 +103,10 @@ const AddProductModal = ({ onClose, refreshList }) => {
     const payload = {
       ...form,
       productId: parseInt(form.productId, 10),
+      supplier: form.supplierId, // Map supplierId to supplier for backend
     };
+    // Remove supplierId from payload since backend expects 'supplier'
+    delete payload.supplierId;
 
     const res = await fetch("/api/Product/CreateProduct", {
       method: "POST",
