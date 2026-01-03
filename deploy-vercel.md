@@ -5,7 +5,7 @@
 ```bashdd
 # Make sure all changes are committed
 git add .
-git commit -m "Configure for Vercel deployment"
+git commit -m "Confingure for Vercel deployment"
 git push origin main
 ```
 bb
