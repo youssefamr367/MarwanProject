@@ -197,3 +197,5 @@ async function setupRoutes() {
 export async function initRoutes() {
   await setupRoutes();
 }
+
+export default app;
