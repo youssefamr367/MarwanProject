@@ -1,5 +1,5 @@
 let dbInitialized = false;
-let app = null;
+let appInstance = null;
 let ensureDbConnection = null;
 let getLastConnectionError = null;
 let initRoutes = null;
@@ -7,9 +7,9 @@ let initRoutes = null;
 export default async function handler(req, res) {
   try {
     // Lazy import to avoid import-time failures crashing the function
-    if (!app || !ensureDbConnection) {
+    if (!appInstance || !ensureDbConnection) {
       const mod = await import("./app.js");
-      app = mod.default;
+      appInstance = mod.default;
       ensureDbConnection = mod.ensureDbConnection;
       getLastConnectionError = mod.getLastConnectionError;
       initRoutes = mod.initRoutes;
@@ -56,20 +56,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Express app IS a request handler function, call it directly
-    // Vercel's req/res objects are compatible with Node.js http module
-    await new Promise((resolve, reject) => {
-      app(req, res);
-      // Wait a bit for the response to be sent
-      const timeout = setTimeout(() => {
-        resolve();
-      }, 100);
-      res.on("finish", () => {
-        clearTimeout(timeout);
-        resolve();
-      });
-      res.on("error", reject);
-    });
+    // Call the Express app directly with Vercel's req/res
+    if (!appInstance || typeof appInstance !== "function") {
+      throw new Error("Express app is not properly initialized");
+    }
+
+    return appInstance(req, res);
   } catch (err) {
     console.error(
       "Unhandled error in app handler:",
