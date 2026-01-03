@@ -85,12 +85,15 @@ export async function ensureDbConnection() {
   const uri = process.env.MONGO_URI;
   if (!uri) {
     if (process.env.VERCEL || process.env.NODE_ENV === "production") {
-      const msg = "MONGO_URI not set in environment - cannot connect to database";
+      const msg =
+        "MONGO_URI not set in environment - cannot connect to database";
       console.error("\u274c", msg);
       lastConnectionError = msg;
       throw new Error(msg);
     }
-    console.warn("MONGO_URI not set — skipping DB connection (allowed in local dev)");
+    console.warn(
+      "MONGO_URI not set — skipping DB connection (allowed in local dev)"
+    );
     return;
   }
 
@@ -145,7 +148,8 @@ export async function ensureDbConnection() {
     } else if (err.message.includes("timeout")) {
       errorMessage = "MongoDB connection timeout. Check network access.";
     } else if (err.message.includes("ECONNREFUSED")) {
-      errorMessage = "MongoDB connection refused. Check if the service is running.";
+      errorMessage =
+        "MongoDB connection refused. Check if the service is running.";
     }
 
     const enhancedError = new Error(errorMessage);
