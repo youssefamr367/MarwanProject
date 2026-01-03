@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm install && npm install --prefix api && npm run build",
   "builds": [
     {
       "src": "frontend/package.json",

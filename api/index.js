@@ -7,7 +7,7 @@ export default async function handler(req, res) {
   try {
     // Lazy import to avoid import-time failures crashing the function
     if (!app || !ensureDbConnection) {
-      const mod = await import("../backend/server.js");
+      const mod = await import("./app.js");
       app = mod.default;
       ensureDbConnection = mod.ensureDbConnection;
       getLastConnectionError = mod.getLastConnectionError;
