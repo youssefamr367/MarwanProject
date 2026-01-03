@@ -117,34 +117,91 @@ app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+app.get("/api/debug", (req, res) => {
+  res.status(200).json({
+    message: "Debug endpoint working",
+    mongoUri: !!process.env.MONGO_URI,
+    nodeEnv: process.env.NODE_ENV,
+    vercel: !!process.env.VERCEL,
+  });
+});
+
+// Flag to track if routes are loaded
+let routesLoaded = false;
+
 // Import and register routes from backend
 async function setupRoutes() {
+  if (routesLoaded) return;
+
   try {
-    const ProductRoutes = (await import("../backend/routes/ProductRoute.js")).default;
-    const OrderRoutes = (await import("../backend/routes/OrderRoute.js")).default;
-    const SupplierRoutes = (await import("../backend/routes/SupplierRoute.js")).default;
-    const FabricRoutes = (await import("../backend/routes/FabricRoute.js")).default;
-    const EshraRoutes = (await import("../backend/routes/EshraRoute.js")).default;
-    const PaintingRoutes = (await import("../backend/routes/PaintingRoute.js")).default;
-    const MarbleRoutes = (await import("../backend/routes/MarbleRoute.js")).default;
-    const DehnatRoutes = (await import("../backend/routes/DehnatRoute.js")).default;
+    console.log("📦 Attempting to load routes...");
+
+    const ProductRoutes = (await import("../backend/routes/ProductRoute.js"))
+      .default;
+    console.log("✅ ProductRoute loaded");
+
+    const OrderRoutes = (await import("../backend/routes/OrderRoute.js"))
+      .default;
+    console.log("✅ OrderRoute loaded");
+
+    const SupplierRoutes = (await import("../backend/routes/SupplierRoute.js"))
+      .default;
+    console.log("✅ SupplierRoute loaded");
+
+    const FabricRoutes = (await import("../backend/routes/FabricRoute.js"))
+      .default;
+    console.log("✅ FabricRoute loaded");
+
+    const EshraRoutes = (await import("../backend/routes/EshraRoute.js"))
+      .default;
+    console.log("✅ EshraRoute loaded");
+
+    const PaintingRoutes = (await import("../backend/routes/PaintingRoute.js"))
+      .default;
+    console.log("✅ PaintingRoute loaded");
+
+    const MarbleRoutes = (await import("../backend/routes/MarbleRoute.js"))
+      .default;
+    console.log("✅ MarbleRoute loaded");
+
+    const DehnatRoutes = (await import("../backend/routes/DehnatRoute.js"))
+      .default;
+    console.log("✅ DehnatRoute loaded");
 
     app.use("/api/Product", ProductRoutes);
-    app.use("/api/Order", OrderRoutes);
-    app.use("/api/suppliers", SupplierRoutes);
-    app.use("/api/fabrics", FabricRoutes);
-    app.use("/api/eshra", EshraRoutes);
-    app.use("/api/paintings", PaintingRoutes);
-    app.use("/api/marbles", MarbleRoutes);
-    app.use("/api/dehnat", DehnatRoutes);
+    console.log("✅ ProductRoute registered");
 
-    console.log("✅ All routes registered");
+    app.use("/api/Order", OrderRoutes);
+    console.log("✅ OrderRoute registered");
+
+    app.use("/api/suppliers", SupplierRoutes);
+    console.log("✅ SupplierRoute registered");
+
+    app.use("/api/fabrics", FabricRoutes);
+    console.log("✅ FabricRoute registered");
+
+    app.use("/api/eshra", EshraRoutes);
+    console.log("✅ EshraRoute registered");
+
+    app.use("/api/paintings", PaintingRoutes);
+    console.log("✅ PaintingRoute registered");
+
+    app.use("/api/marbles", MarbleRoutes);
+    console.log("✅ MarbleRoute registered");
+
+    app.use("/api/dehnat", DehnatRoutes);
+    console.log("✅ DehnatRoute registered");
+
+    routesLoaded = true;
+    console.log("✅✅ All routes registered successfully");
   } catch (err) {
-    console.error("❌ Error registering routes:", err);
+    console.error("❌ Error registering routes:", err.message);
+    console.error("❌ Error stack:", err.stack);
+    routesLoaded = false;
   }
 }
 
-// Register routes on module load
-await setupRoutes();
-
-export default app;
+// Setup routes on first request
+export async function initRoutes() {
+  await setupRoutes();
+}

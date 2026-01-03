@@ -2,6 +2,7 @@ let dbInitialized = false;
 let app = null;
 let ensureDbConnection = null;
 let getLastConnectionError = null;
+let initRoutes = null;
 
 export default async function handler(req, res) {
   try {
@@ -11,6 +12,12 @@ export default async function handler(req, res) {
       app = mod.default;
       ensureDbConnection = mod.ensureDbConnection;
       getLastConnectionError = mod.getLastConnectionError;
+      initRoutes = mod.initRoutes;
+    }
+
+    // Ensure routes are loaded
+    if (initRoutes) {
+      await initRoutes();
     }
 
     // Always try to ensure DB connection for each request in serverless
