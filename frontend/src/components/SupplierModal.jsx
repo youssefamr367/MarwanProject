@@ -70,22 +70,23 @@ const SupplierModal = ({ supplier, onClose, refreshList }) => {
         setError("");
 
         try {
+            const res = await fetch(`/api/suppliers/${supplier._id}`, {
+                method: "DELETE"
+            });
+            const data = await res.json().catch(() => ({}));
 
-        const res = await fetch(`/api/suppliers/${supplier._id}`, {
-            method: "DELETE"
-        });
-        const data = await res.json();
-
-        if (!res.ok) {
-            // Show the backend’s message
-            alert(data.message || "Could not delete supplier");
-            return;
+            if (res.ok) {
+                refreshList();
+                onClose();
+            } else {
+                let errorMsg = data.message || data.error || "Could not delete supplier";
+                setError(errorMsg);
+            }
+        } catch (err) {
+            setError("Network error. Please check your connection and try again.");
+        } finally {
+            setDeleting(false);
         }
-
-        // On success, refresh & close
-        alert("Supplier deleted");
-        refreshList();
-        onClose();
     };
 
     return (
@@ -95,7 +96,7 @@ const SupplierModal = ({ supplier, onClose, refreshList }) => {
         >
             <div
                 className="modal-box"
-                onClick={e => e.stopPropagation()} /* clicks inside → don’t close */
+                onClick={e => e.stopPropagation()} /* clicks inside → don't close */
             >
                 <h3>Edit Supplier</h3>
 
