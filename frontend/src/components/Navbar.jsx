@@ -3,7 +3,9 @@ import "../CSS/Navbar.css";
 
 const Navbar = () => (
   <nav className="navbar">
-    <h1>Maro Furniture</h1>
+    <Link to="/">
+      <h1>AURORA</h1>
+    </Link>
     <ul>
       <li>
         <Link to="/">Home</Link>
