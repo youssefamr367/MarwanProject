@@ -5,7 +5,7 @@ const ProductSchema = new Schema(
   {
     productId: { type: Number, required: true, unique: true },
     name: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String },
 
     fabrics: [{ type: Schema.Types.ObjectId, ref: "Fabric", required: true }],
     eshra: [{ type: Schema.Types.ObjectId, ref: "Eshra", required: true }],
