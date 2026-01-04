@@ -4,6 +4,10 @@ import "../CSS/AddOrderModal.css"; // reuse the same aom-* CSS
 
 const OrderDetailModal = ({ order, onClose, refreshList }) => {
   const [selectedItem, setSelectedItem] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [savingSla, setSavingSla] = useState(false);
+  const [error, setError] = useState("");
   const [slaDraft, setSlaDraft] = useState(() => {
     const base = order.statusSla || {};
     const ensure = (s) => ({
@@ -19,20 +23,58 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
   });
 
   const updateStatus = async (newStatus) => {
-    await fetch(`/api/Order/updateByProductId/${order.orderId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status: newStatus }),
-    });
-    refreshList();
-    onClose();
+    if (loading) return;
+    
+    setLoading(true);
+    setError("");
+    
+    try {
+      const res = await fetch(`/api/Order/updateByProductId/${order.orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      
+      const data = await res.json().catch(() => ({}));
+      
+      if (res.ok) {
+        refreshList();
+        onClose();
+      } else {
+        setError(data.message || data.error || "Failed to update order status");
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteOrder = async () => {
-    if (!window.confirm("Delete this order?")) return;
-    await fetch(`/api/Order/deleteByOrderId/${order.orderId}`, { method: "DELETE" });
-    refreshList();
-    onClose();
+    if (!window.confirm("Delete this order? This action cannot be undone.")) return;
+    if (deleting) return;
+    
+    setDeleting(true);
+    setError("");
+    
+    try {
+      const res = await fetch(`/api/Order/deleteByOrderId/${order.orderId}`, { 
+        method: "DELETE" 
+      });
+      
+      const data = await res.json().catch(() => ({}));
+      
+      if (res.ok) {
+        refreshList();
+        onClose();
+      } else {
+        setError(data.message || data.error || "Failed to delete order");
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const normalizeSla = (raw) => {
@@ -53,12 +95,31 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
   };
 
   const saveSla = async () => {
-    await fetch(`/api/Order/updateByProductId/${order.orderId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ statusSla: normalizeSla(slaDraft) }),
-    });
-    await refreshList();
+    if (savingSla) return;
+    
+    setSavingSla(true);
+    setError("");
+    
+    try {
+      const res = await fetch(`/api/Order/updateByProductId/${order.orderId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ statusSla: normalizeSla(slaDraft) }),
+      });
+      
+      const data = await res.json().catch(() => ({}));
+      
+      if (res.ok) {
+        await refreshList();
+        setError(""); // Clear any previous errors
+      } else {
+        setError(data.message || data.error || "Failed to save SLA settings");
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setSavingSla(false);
+    }
   };
 
   const formatDate = (dateString) =>
@@ -143,8 +204,20 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
               ))}
             </div>
             <div className="aom-actions-left">
-              <button type="button" className="aom-btn" onClick={saveSla}>💾 Save SLA</button>
+              <button 
+                type="button" 
+                className="aom-btn" 
+                onClick={saveSla}
+                disabled={savingSla || loading || deleting}
+              >
+                {savingSla ? "⏳ Saving..." : "💾 Save SLA"}
+              </button>
             </div>
+            {error && (
+              <div style={{ background: "#fee", border: "1px solid #fcc", padding: "12px", marginTop: "12px", borderRadius: "4px" }}>
+                <strong style={{ color: "#c33" }}>Error:</strong> {error}
+              </div>
+            )}
           </section>
 
           {/* Status History */}
@@ -194,12 +267,27 @@ const OrderDetailModal = ({ order, onClose, refreshList }) => {
                 key={a.next}
                 className="aom-primary"
                 onClick={() => updateStatus(a.next)}
+                disabled={loading || deleting || savingSla}
               >
-                {a.label}
+                {loading ? "⏳ Updating..." : a.label}
               </button>
             ))}
-            <button type="button" className="aom-btn" onClick={deleteOrder}>🗑️ Delete</button>
-            <button type="button" className="aom-ghost" onClick={onClose}>✖️ Close</button>
+            <button 
+              type="button" 
+              className="aom-btn" 
+              onClick={deleteOrder}
+              disabled={loading || deleting || savingSla}
+            >
+              {deleting ? "⏳ Deleting..." : "🗑️ Delete"}
+            </button>
+            <button 
+              type="button" 
+              className="aom-ghost" 
+              onClick={onClose}
+              disabled={loading || deleting || savingSla}
+            >
+              ✖️ Close
+            </button>
           </div>
         </div>
       </div>

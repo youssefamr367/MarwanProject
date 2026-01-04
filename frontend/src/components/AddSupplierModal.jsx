@@ -4,6 +4,8 @@ import "../CSS/SupplierModal.css";
 
 const AddSupplierModal = ({ onClose, refreshList }) => {
     const [form, setForm] = useState({ name: "", number: "" });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const handleChange = e => {
         const { name, value } = e.target;
@@ -11,30 +13,47 @@ const AddSupplierModal = ({ onClose, refreshList }) => {
     };
 
     const handleSubmit = async () => {
+        if (loading) return;
+        
         if (!form.name.trim()) {
-            alert("Name is required");
+            setError("Name is required");
             return;
         }
         if (!form.number.trim()) {
-            alert("Phone number is required");
+            setError("Phone number is required");
             return;
         }
-         if (!/^\d{11}$/.test(form.number)) {
-                 alert("Phone number must be exactly 11 digits (0–9 only)");
-                return;
-               }
-        const res = await fetch("/api/suppliers/create", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: form.name, number: form.number })
-        });
-        if (res.ok) {
-            alert("Supplier added");
-            refreshList();
-            onClose();
-        } else {
-            const err = await res.json();
-            alert("Error: " + err.message);
+        if (!/^\d{11}$/.test(form.number)) {
+            setError("Phone number must be exactly 11 digits (0–9 only)");
+            return;
+        }
+        
+        setLoading(true);
+        setError("");
+        
+        try {
+            const res = await fetch("/api/suppliers/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: form.name, number: form.number })
+            });
+            
+            const data = await res.json().catch(() => ({}));
+            
+            if (res.ok) {
+                refreshList();
+                onClose();
+            } else {
+                let errorMsg = data.message || data.error || "Failed to create supplier";
+                if (errorMsg.toLowerCase().includes("duplicate") || errorMsg.toLowerCase().includes("already exists")) {
+                    errorMsg = "A supplier with this name already exists. Please use a different name.";
+                }
+                setError(errorMsg);
+            }
+        } catch (err) {
+            setError("Network error. Please check your connection and try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -69,9 +88,17 @@ const AddSupplierModal = ({ onClose, refreshList }) => {
                     placeholder="e.g. 0123456789"
                 />
 
+                {error && (
+                    <div style={{ background: "#fee", border: "1px solid #fcc", padding: "12px", margin: "12px 0", borderRadius: "4px" }}>
+                        <strong style={{ color: "#c33" }}>Error:</strong> {error}
+                    </div>
+                )}
+                
                 <div className="modal-buttons">
-                    <button onClick={handleSubmit}>Add</button>
-                    <button onClick={onClose}>Cancel</button>
+                    <button onClick={handleSubmit} disabled={loading}>
+                        {loading ? "⏳ Adding..." : "Add"}
+                    </button>
+                    <button onClick={onClose} disabled={loading}>Cancel</button>
                 </div>
             </div>
         </div>

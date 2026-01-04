@@ -4,6 +4,9 @@ import "../CSS/SupplierModal.css";
 
 const SupplierModal = ({ supplier, onClose, refreshList }) => {
     const [form, setForm] = useState({ name: "", number: "" });
+    const [loading, setLoading] = useState(false);
+    const [deleting, setDeleting] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         setForm({
@@ -18,35 +21,55 @@ const SupplierModal = ({ supplier, onClose, refreshList }) => {
     };
 
     const handleSave = async () => {
+        if (loading || deleting) return;
+        
         if (!form.name.trim()) {
-            alert("Name is required");
+            setError("Name is required");
             return;
         }
         if (!form.number.trim()) {
-            alert("Phone number is required");
+            setError("Phone number is required");
             return;
         }
-          if (!/^\d{11}$/.test(form.number)) {
-                 alert("Phone number must be exactly 11 digits (0–9 only)");
-                return;
-          }
-        const res = await fetch(`/api/suppliers/${supplier._id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name: form.name, number: (form.number) })
-        });
-        if (res.ok) {
-            alert("Supplier updated");
-            refreshList();
-            onClose();
-        } else {
-            const err = await res.json();
-            alert("Error: " + err.message);
+        if (!/^\d{11}$/.test(form.number)) {
+            setError("Phone number must be exactly 11 digits (0–9 only)");
+            return;
+        }
+        
+        setLoading(true);
+        setError("");
+        
+        try {
+            const res = await fetch(`/api/suppliers/${supplier._id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name: form.name, number: (form.number) })
+            });
+            
+            const data = await res.json().catch(() => ({}));
+            
+            if (res.ok) {
+                refreshList();
+                onClose();
+            } else {
+                let errorMsg = data.message || data.error || "Failed to update supplier";
+                setError(errorMsg);
+            }
+        } catch (err) {
+            setError("Network error. Please check your connection and try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleDelete = async () => {
-        if (!window.confirm("Delete this supplier?")) return;
+        if (!window.confirm("Delete this supplier? This action cannot be undone.")) return;
+        if (deleting || loading) return;
+
+        setDeleting(true);
+        setError("");
+
+        try {
 
         const res = await fetch(`/api/suppliers/${supplier._id}`, {
             method: "DELETE"
@@ -94,12 +117,24 @@ const SupplierModal = ({ supplier, onClose, refreshList }) => {
                     placeholder="e.g. 0123456789"
                 />
 
+                {error && (
+                    <div style={{ background: "#fee", border: "1px solid #fcc", padding: "12px", margin: "12px 0", borderRadius: "4px" }}>
+                        <strong style={{ color: "#c33" }}>Error:</strong> {error}
+                    </div>
+                )}
+                
                 <div className="modal-buttons">
-                    <button onClick={handleSave}>Save</button>
-                    <button className="delete-btn" onClick={handleDelete}>
-                        Delete
+                    <button onClick={handleSave} disabled={loading || deleting}>
+                        {loading ? "⏳ Saving..." : "Save"}
                     </button>
-                    <button onClick={onClose}>Cancel</button>
+                    <button 
+                        className="delete-btn" 
+                        onClick={handleDelete}
+                        disabled={loading || deleting}
+                    >
+                        {deleting ? "⏳ Deleting..." : "Delete"}
+                    </button>
+                    <button onClick={onClose} disabled={loading || deleting}>Cancel</button>
                 </div>
             </div>
         </div>

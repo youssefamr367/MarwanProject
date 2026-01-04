@@ -31,6 +31,10 @@ const ProductModal = ({ product, onClose, refreshList }) => {
     supplier: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState("");
+
   // Load lists + initialize form
   useEffect(() => {
     Promise.all([
@@ -83,37 +87,64 @@ const ProductModal = ({ product, onClose, refreshList }) => {
 
   // ✅ Option A: Close modal only if save succeeded
   const handleSave = async () => {
-    const payload = {
-      ...form,
-      supplier: sel.supplier,
-    };
+    if (loading) return;
+    
+    setLoading(true);
+    setError("");
+    
+    try {
+      const payload = {
+        ...form,
+        supplier: sel.supplier,
+      };
 
-    const res = await fetch(`/api/Product/updateByProductId/${product.productId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const res = await fetch(`/api/Product/updateByProductId/${product.productId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (res.ok) {
-      await refreshList();
-      onClose(); // closes only if success
-    } else {
-      const err = await res.json().catch(() => ({}));
-      alert("Error: " + (err.message || res.status));
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        await refreshList();
+        onClose(); // closes only if success
+      } else {
+        let errorMsg = data.message || data.error || "Failed to update product";
+        setError(errorMsg);
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Delete this product?")) return;
-    const res = await fetch(`/api/Product/deleteByProductId/${product.productId}`, {
-      method: "DELETE",
-    });
-    if (res.ok) {
-      refreshList();
-      onClose();
-    } else {
-      const err = await res.json();
-      alert("Error: " + err.message);
+    if (!window.confirm("Delete this product? This action cannot be undone.")) return;
+    if (deleting) return;
+    
+    setDeleting(true);
+    setError("");
+    
+    try {
+      const res = await fetch(`/api/Product/deleteByProductId/${product.productId}`, {
+        method: "DELETE",
+      });
+      
+      const data = await res.json().catch(() => ({}));
+      
+      if (res.ok) {
+        refreshList();
+        onClose();
+      } else {
+        let errorMsg = data.message || data.error || "Failed to delete product";
+        setError(errorMsg);
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -207,15 +238,37 @@ const ProductModal = ({ product, onClose, refreshList }) => {
           </div>
         </section>
 
+        {/* Error Message */}
+        {error && (
+          <div className="aom-card" style={{ background: "#fee", border: "1px solid #fcc", padding: "12px", margin: "16px 0" }}>
+            <strong style={{ color: "#c33" }}>Error:</strong> {error}
+          </div>
+        )}
+
         {/* Footer */}
         <div className="aom-footer">
-          <button type="button" className="aom-primary" onClick={handleSave}>
-            💾 Save Changes
+          <button 
+            type="button" 
+            className="aom-primary" 
+            onClick={handleSave}
+            disabled={loading || deleting}
+          >
+            {loading ? "⏳ Saving..." : "💾 Save Changes"}
           </button>
-          <button type="button" className="aom-btn" onClick={handleDelete}>
-            🗑️ Delete
+          <button 
+            type="button" 
+            className="aom-btn" 
+            onClick={handleDelete}
+            disabled={loading || deleting}
+          >
+            {deleting ? "⏳ Deleting..." : "🗑️ Delete"}
           </button>
-          <button type="button" className="aom-ghost" onClick={onClose}>
+          <button 
+            type="button" 
+            className="aom-ghost" 
+            onClick={onClose}
+            disabled={loading || deleting}
+          >
             ✖️ Close
           </button>
         </div>

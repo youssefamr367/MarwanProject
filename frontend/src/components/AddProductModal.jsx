@@ -33,6 +33,9 @@ const AddProductModal = ({ onClose, refreshList }) => {
     glass: "",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   // ----- Effects -----
   useEffect(() => {
     Promise.all([
@@ -98,29 +101,53 @@ const AddProductModal = ({ onClose, refreshList }) => {
   };
 
   const handleSubmit = async () => {
-    if (!form.productId || !form.name || !form.supplierId) return;
+    if (!form.productId || !form.name || !form.supplierId || loading) return;
 
-    const payload = {
-      ...form,
-      productId: parseInt(form.productId, 10),
-      supplier: form.supplierId, // Map supplierId to supplier for backend
-    };
-    // Remove supplierId from payload since backend expects 'supplier'
-    delete payload.supplierId;
+    setLoading(true);
+    setError("");
 
-    const res = await fetch("/api/Product/CreateProduct", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const payload = {
+        ...form,
+        productId: parseInt(form.productId, 10),
+        supplier: form.supplierId, // Map supplierId to supplier for backend
+      };
+      // Remove supplierId from payload since backend expects 'supplier'
+      delete payload.supplierId;
 
-    if (res.ok) {
-      alert("Product Added!");
-      refreshList();
-      onClose();
-    } else {
-      const err = await res.json().catch(() => ({}));
-      alert("Error: " + (err.message || res.status));
+      const res = await fetch("/api/Product/CreateProduct", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        refreshList();
+        onClose();
+      } else {
+        // Improve error messages
+        let errorMsg = data.message || data.error || "Failed to create product";
+        
+        // Check for duplicate product ID
+        if (errorMsg.toLowerCase().includes("already exists") || 
+            errorMsg.toLowerCase().includes("duplicate") ||
+            res.status === 400) {
+          errorMsg = `Product ID ${form.productId} already exists. Please use a different product ID.`;
+        }
+        
+        // Check for invalid supplier
+        if (errorMsg.toLowerCase().includes("supplier")) {
+          errorMsg = "Invalid supplier selected. Please select a valid supplier.";
+        }
+        
+        setError(errorMsg);
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -260,17 +287,29 @@ const AddProductModal = ({ onClose, refreshList }) => {
           </div>
         </section>
 
+        {/* Error Message */}
+        {error && (
+          <div className="aom-card" style={{ background: "#fee", border: "1px solid #fcc", padding: "12px", margin: "16px 0" }}>
+            <strong style={{ color: "#c33" }}>Error:</strong> {error}
+          </div>
+        )}
+
         {/* Footer */}
         <div className="aom-footer">
           <button
             type="button"
             className="aom-primary"
-            disabled={!formValid}
+            disabled={!formValid || loading}
             onClick={handleSubmit}
           >
-            Save Product
+            {loading ? "⏳ Creating..." : "Save Product"}
           </button>
-          <button type="button" className="aom-ghost" onClick={onClose}>
+          <button 
+            type="button" 
+            className="aom-ghost" 
+            onClick={onClose}
+            disabled={loading}
+          >
             Cancel
           </button>
         </div>

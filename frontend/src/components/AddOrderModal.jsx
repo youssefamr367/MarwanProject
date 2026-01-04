@@ -34,6 +34,9 @@ const AddOrderModal = ({ onClose, refreshList }) => {
     Done: { greenDays: "", orangeDays: "", redDays: "" },
   });
 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   // ----- Effects -----
   useEffect(() => {
     let cancelled = false;
@@ -193,34 +196,54 @@ const AddOrderModal = ({ onClose, refreshList }) => {
   const formValid = orderId && items.length > 0;
 
   const handleSubmit = async () => {
-    if (!formValid) return;
-    const payload = {
-      orderId: parseInt(orderId, 10),
-      items: items.map((i) => ({
-        productId: parseInt(i.productId, 10),
-        fabrics: i.fabrics,
-        eshra: i.eshra,
-        paintings: i.paintings,
-        marble: i.marble,
-        glass: i.glass,
-        supplierId: i.supplierId,
-      })),
-      statusSla: normalizeSla(statusSla),
-    };
+    if (!formValid || loading) return;
+    
+    setLoading(true);
+    setError("");
+    
+    try {
+      const payload = {
+        orderId: parseInt(orderId, 10),
+        items: items.map((i) => ({
+          productId: parseInt(i.productId, 10),
+          fabrics: i.fabrics,
+          eshra: i.eshra,
+          paintings: i.paintings,
+          marble: i.marble,
+          glass: i.glass,
+          supplierId: i.supplierId,
+        })),
+        statusSla: normalizeSla(statusSla),
+      };
 
-    const res = await fetch("/api/Order/CreateOrder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const res = await fetch("/api/Order/CreateOrder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (res.ok) {
-      alert("Created!");
-      await refreshList();
-      onClose();
-    } else {
-      const err = await res.json().catch(() => ({}));
-      alert("Error: " + (err.message || err.error || res.status));
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        await refreshList();
+        onClose();
+      } else {
+        // Improve error messages
+        let errorMsg = data.message || data.error || "Failed to create order";
+        
+        // Check for duplicate order ID
+        if (errorMsg.toLowerCase().includes("duplicate") || 
+            errorMsg.toLowerCase().includes("already exists") ||
+            res.status === 400) {
+          errorMsg = `Order ID ${orderId} already exists. Please use a different order ID.`;
+        }
+        
+        setError(errorMsg);
+      }
+    } catch (err) {
+      setError("Network error. Please check your connection and try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -484,17 +507,29 @@ const AddOrderModal = ({ onClose, refreshList }) => {
           )}
         </section>
 
+        {/* Error Message */}
+        {error && (
+          <div className="aom-card" style={{ background: "#fee", border: "1px solid #fcc", padding: "12px", margin: "16px 0" }}>
+            <strong style={{ color: "#c33" }}>Error:</strong> {error}
+          </div>
+        )}
+
         {/* Footer */}
         <div className="aom-footer">
           <button
             type="button"
             className="aom-primary"
-            disabled={!formValid}
+            disabled={!formValid || loading}
             onClick={handleSubmit}
           >
-            Save Order
+            {loading ? "⏳ Creating..." : "Save Order"}
           </button>
-          <button type="button" className="aom-ghost" onClick={onClose}>
+          <button 
+            type="button" 
+            className="aom-ghost" 
+            onClick={onClose}
+            disabled={loading}
+          >
             Cancel
           </button>
         </div>
