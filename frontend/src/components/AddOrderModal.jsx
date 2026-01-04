@@ -168,9 +168,20 @@ const AddOrderModal = ({ onClose, refreshList }) => {
     setItemDraft((d) => ({ ...d, [name]: d[name].filter((x) => x !== val) }));
   };
 
+  // Check if at least one customization is selected
+  const hasAtLeastOneCustomization = (draft) => {
+    return (
+      draft.fabrics.length > 0 ||
+      draft.eshra.length > 0 ||
+      draft.paintings.length > 0 ||
+      draft.marble.length > 0 ||
+      draft.glass.length > 0
+    );
+  };
+
   const addItem = () => {
-    const { productId, fabrics, supplierId } = itemDraft;
-    if (!productId || fabrics.length === 0 || !supplierId) return;
+    const { productId, supplierId } = itemDraft;
+    if (!productId || !hasAtLeastOneCustomization(itemDraft) || !supplierId) return;
     setItems((i) => [...i, itemDraft]);
     resetItemDraft();
   };
@@ -372,10 +383,10 @@ const AddOrderModal = ({ onClose, refreshList }) => {
               disabled={
                 !itemDraft.productId ||
                 !itemDraft.supplierId ||
-                itemDraft.fabrics.length === 0
+                !hasAtLeastOneCustomization(itemDraft)
               }
               onClick={addItem}
-              title="Product, at least one fabric, and a supplier are required."
+              title="Product, at least one customization (fabrics, eshra, paintings, marble, or glass), and a supplier are required."
             >
               + Add Item
             </button>
