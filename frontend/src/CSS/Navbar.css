@@ -10,6 +10,16 @@
 .navbar h1 {
   margin: 0;
   font-size: 20px;
+  color: white;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: white;
+}
+
+.navbar a:hover {
+  text-decoration: none;
 }
 
 .navbar ul {
