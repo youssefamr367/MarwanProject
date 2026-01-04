@@ -54,9 +54,29 @@ const AddOrderModal = ({ onClose, refreshList }) => {
   }, []);
 
   // ----- Derived -----
+  // Filter products by selected supplier
+  const filteredProducts = useMemo(() => {
+    if (!itemDraft.supplierId) return [];
+    return products.filter((p) => {
+      // Handle populated supplier (object with _id)
+      if (p.supplier?._id) {
+        return p.supplier._id.toString() === itemDraft.supplierId.toString();
+      }
+      // Handle supplier as string ID
+      if (typeof p.supplier === 'string') {
+        return p.supplier === itemDraft.supplierId;
+      }
+      // Handle supplier as ObjectId (if not populated)
+      if (p.supplier?.toString) {
+        return p.supplier.toString() === itemDraft.supplierId.toString();
+      }
+      return false;
+    });
+  }, [products, itemDraft.supplierId]);
+
   const selProd = useMemo(
-    () => products.find((p) => p.productId?.toString() === itemDraft.productId),
-    [products, itemDraft.productId]
+    () => filteredProducts.find((p) => p.productId?.toString() === itemDraft.productId),
+    [filteredProducts, itemDraft.productId]
   );
 
   // ----- Helpers -----
@@ -98,9 +118,26 @@ const AddOrderModal = ({ onClose, refreshList }) => {
     return () => document.removeEventListener("keydown", onEsc);
   }, [onClose]);
 
-  const handleProductChange = (e) => {
+  const handleSupplierChange = (e) => {
+    const newSupplierId = e.target.value;
     setItemDraft({
       ...emptyItem,
+      supplierId: newSupplierId,
+      // Reset productId when supplier changes
+      productId: "",
+    });
+    setSelection({
+      fabrics: "",
+      eshra: "",
+      paintings: "",
+      marble: "",
+      glass: "",
+    });
+  };
+
+  const handleProductChange = (e) => {
+    setItemDraft({
+      ...itemDraft,
       productId: e.target.value,
     });
     setSelection({
@@ -225,9 +262,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
               <select
                 id="supplier"
                 value={itemDraft.supplierId}
-                onChange={(e) =>
-                  setItemDraft((d) => ({ ...d, supplierId: e.target.value }))
-                }
+                onChange={handleSupplierChange}
               >
                 <option value="">— Select supplier —</option>
                 {suppliers.map((s) => (
@@ -253,14 +288,25 @@ const AddOrderModal = ({ onClose, refreshList }) => {
               id="product"
               value={itemDraft.productId}
               onChange={handleProductChange}
+              disabled={!itemDraft.supplierId}
             >
-              <option value="">— Select product —</option>
-              {products.map((p) => (
+              <option value="">
+                {!itemDraft.supplierId 
+                  ? "— Please select a supplier first —" 
+                  : "— Select product —"}
+              </option>
+              {filteredProducts.map((p) => (
                 <option key={p.productId} value={p.productId}>
                   {p.name} (#{p.productId})
                 </option>
               ))}
             </select>
+            {!itemDraft.supplierId && (
+              <div className="aom-hint">Please select a supplier first</div>
+            )}
+            {itemDraft.supplierId && filteredProducts.length === 0 && (
+              <div className="aom-hint">No products available for this supplier</div>
+            )}
           </div>
 
           {selProd && (
