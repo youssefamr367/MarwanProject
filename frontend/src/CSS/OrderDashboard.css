@@ -123,3 +123,115 @@
   color: #555;
   padding: 20px 0;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+  .OrderDashboard {
+    padding: 12px;
+  }
+
+  .OrderDashboard h1 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+
+  .summary-cards {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .summary-cards .card {
+    padding: 12px;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .card p {
+    font-size: 1.25rem;
+  }
+
+  .controls-row {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .tabs {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tab {
+    padding: 8px 10px;
+    font-size: 14px;
+    flex: 1;
+    min-width: calc(50% - 3px);
+  }
+
+  .search-export {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .search-export input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  .export-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+
+  /* Convert table to cards on mobile */
+  .orders-table {
+    display: none;
+  }
+
+  .orders-table-mobile {
+    display: block;
+  }
+
+  .order-card-mobile {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  .order-card-mobile.overdue {
+    background: #fecaca;
+  }
+
+  .order-card-mobile .card-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+
+  .order-card-mobile .card-label {
+    font-weight: bold;
+    color: #666;
+    font-size: 14px;
+  }
+
+  .order-card-mobile .card-value {
+    color: #333;
+    font-size: 14px;
+    text-align: right;
+    flex: 1;
+    margin-left: 12px;
+  }
+}
+
+/* Desktop: hide mobile cards */
+@media (min-width: 769px) {
+  .orders-table-mobile {
+    display: none;
+  }
+}

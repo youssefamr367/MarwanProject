@@ -217,6 +217,47 @@ const OrderDashboard = () => {
         </tbody>
       </table>
 
+      {/* Mobile card view */}
+      <div className="orders-table-mobile">
+        {visible.length === 0 && (
+          <div className="no-results">No orders to display.</div>
+        )}
+        {visible.map((o) => (
+          <div
+            key={o._id}
+            className={`order-card-mobile ${isOverdue(o) ? "overdue" : ""} ${getStatusColor(o)}`}
+            onClick={() => setSelectedOrder(o)}
+          >
+            <div className="card-row">
+              <span className="card-label">Order ID:</span>
+              <span className="card-value">{o.orderId}</span>
+            </div>
+            <div className="card-row">
+              <span className="card-label">Created:</span>
+              <span className="card-value">{new Date(o.createdAt).toISOString().split("T")[0]}</span>
+            </div>
+            <div className="card-row">
+              <span className="card-label">Status Date:</span>
+              <span className="card-value">{new Date(getStatusDate(o)).toISOString().split("T")[0]}</span>
+            </div>
+            <div className="card-row">
+              <span className="card-label">Status:</span>
+              <span className="card-value">{o.status}</span>
+            </div>
+            <div className="card-row">
+              <span className="card-label">Products:</span>
+              <span className="card-value">{o.items.map((i) => i.product?.name).join(", ")}</span>
+            </div>
+            {o.notes && (
+              <div className="card-row">
+                <span className="card-label">Notes:</span>
+                <span className="card-value">{o.notes}</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
       {selectedOrder && (
         <OrderDetailModal
           order={selectedOrder}

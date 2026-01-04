@@ -157,4 +157,57 @@
     from { transform: scale(0.9); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
   }
+
+  /* Mobile responsive styles */
+  @media (max-width: 768px) {
+    .modal-box {
+      width: 95%;
+      max-width: 95%;
+      margin: 10px;
+      padding: 16px;
+    }
+
+    .modal-header {
+      padding: 12px;
+    }
+
+    .modal-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .modal-body {
+      padding: 12px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 12px;
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .modal-footer {
+      flex-direction: column;
+      padding: 12px;
+    }
+
+    .modal-footer button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    .tag-input {
+      flex-direction: column;
+    }
+
+    .tag-input input {
+      width: 100%;
+    }
+
+    .tag-input button {
+      width: 100%;
+      padding: 10px;
+    }
+  }
   

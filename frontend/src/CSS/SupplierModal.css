@@ -55,3 +55,37 @@
 .modal-buttons button:hover {
     opacity: 0.9;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .modal-backdrop {
+        padding: 10px;
+    }
+
+    .modal-box {
+        width: 95%;
+        max-width: 95%;
+        padding: 16px;
+    }
+
+    .modal-box h3 {
+        font-size: 1.2rem;
+    }
+
+    .modal-box input,
+    .modal-box textarea {
+        padding: 12px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .modal-buttons button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+}

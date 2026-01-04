@@ -66,3 +66,55 @@
     color: #555;
     margin-top: 20px;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .SupplierList {
+        padding: 12px;
+    }
+
+    .header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .header-row h2 {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .add-button {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    .filter-row {
+        margin: 12px 0;
+    }
+
+    .search-input {
+        width: 100%;
+        max-width: 100%;
+        padding: 12px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .supplier-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .supplier-card {
+        padding: 14px;
+    }
+
+    .supplier-card h3 {
+        font-size: 16px;
+    }
+
+    .supplier-card p {
+        font-size: 14px;
+    }
+}

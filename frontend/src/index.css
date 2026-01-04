@@ -51,3 +51,22 @@ header a {
   padding: 20px;
   margin: 0 auto;
 }
+
+/* Mobile responsive global styles */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .container {
+    padding: 0;
+  }
+
+  .pages {
+    padding: 12px;
+  }
+
+  header .container {
+    padding: 10px 12px;
+  }
+}

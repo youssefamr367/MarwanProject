@@ -70,3 +70,55 @@
 .del-btn:hover {
     opacity: 0.8;
 }
+
+/* Mobile responsive styles */
+@media (max-width: 768px) {
+    .LookupManager {
+        padding: 12px;
+    }
+
+    .LookupManager h2 {
+        font-size: 1.5rem;
+        margin-bottom: 12px;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .tab {
+        padding: 10px 12px;
+        font-size: 14px;
+        flex: 1;
+        min-width: calc(50% - 3px);
+    }
+
+    .add-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .add-row input {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .add-row button {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+    }
+
+    .lookup-list li {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .del-btn {
+        font-size: 1.5em;
+        padding: 4px 8px;
+        min-width: 40px;
+    }
+}
