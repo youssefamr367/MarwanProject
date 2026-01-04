@@ -1,11 +1,11 @@
 import express from 'express';
-import Dehnat from '../models/Dehnat.js';
+import Glass from '../models/Glass.js';
 
 const router = express.Router();
 
 router.post('/create', async (req, res) => {
     try {
-        const d = new Dehnat(req.body);
+        const d = new Glass(req.body);
         await d.save();
         res.status(201).json(d);
     } catch (err) {
@@ -15,7 +15,7 @@ router.post('/create', async (req, res) => {
 
 router.get('/all', async (req, res) => {
     try {
-        const all = await Dehnat.find();
+        const all = await Glass.find();
         res.json(all);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -24,9 +24,9 @@ router.get('/all', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try {
-        const deleted = await Dehnat.findByIdAndDelete(req.params.id);
-        if (!deleted) return res.status(404).json({ message: 'Dehnat not found' });
-        res.json({ message: 'Dehnat deleted' });
+        const deleted = await Glass.findByIdAndDelete(req.params.id);
+        if (!deleted) return res.status(404).json({ message: 'Glass not found' });
+        res.json({ message: 'Glass deleted' });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

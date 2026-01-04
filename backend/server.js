@@ -41,7 +41,7 @@ import FabricRoutes from "./routes/FabricRoute.js";
 import EshraRoutes from "./routes/EshraRoute.js";
 import PaintingRoutes from "./routes/PaintingRoute.js";
 import MarbleRoutes from "./routes/MarbleRoute.js";
-import DehnatRoutes from "./routes/DehnatRoute.js";
+import GlassRoutes from "./routes/GlassRoute.js";
 
 // Register API endpoints
 const safeUse = (label, path, routeModule) => {
@@ -61,7 +61,7 @@ safeUse("FabricRoutes", "/api/fabrics", FabricRoutes);
 safeUse("EshraRoutes", "/api/eshra", EshraRoutes);
 safeUse("PaintingRoutes", "/api/paintings", PaintingRoutes);
 safeUse("MarbleRoutes", "/api/marbles", MarbleRoutes);
-safeUse("DehnatRoutes", "/api/dehnat", DehnatRoutes);
+safeUse("GlassRoutes", "/api/glass", GlassRoutes);
 
 // Serve frontend static files in production (must be last)
 if (process.env.NODE_ENV === "production") {

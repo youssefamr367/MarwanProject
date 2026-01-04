@@ -11,7 +11,7 @@ const AddProductModal = ({ onClose, refreshList }) => {
     eshra: [],
     paintings: [],
     marble: [],
-    dehnat: [],
+    glass: [],
     images: "",
     supplierId: "",
   });
@@ -21,7 +21,7 @@ const AddProductModal = ({ onClose, refreshList }) => {
     eshra: [],
     paintings: [],
     marble: [],
-    dehnat: [],
+    glass: [],
     suppliers: [],
   });
 
@@ -30,7 +30,7 @@ const AddProductModal = ({ onClose, refreshList }) => {
     eshra: "",
     paintings: "",
     marble: "",
-    dehnat: "",
+    glass: "",
   });
 
   // ----- Effects -----
@@ -40,7 +40,7 @@ const AddProductModal = ({ onClose, refreshList }) => {
       fetch("/api/eshra/all").then((r) => r.json()),
       fetch("/api/paintings/all").then((r) => r.json()),
       fetch("/api/marbles/all").then((r) => r.json()),
-      fetch("/api/dehnat/all").then((r) => r.json()),
+      fetch("/api/glass/all").then((r) => r.json()),
       fetch("/api/suppliers/all").then((r) => r.json()),
     ])
       .then(([f, e, p, m, d, s]) => {
@@ -49,7 +49,7 @@ const AddProductModal = ({ onClose, refreshList }) => {
           eshra: e,
           paintings: p,
           marble: m,
-          dehnat: d,
+          glass: d,
           suppliers: s,
         });
       })
@@ -211,7 +211,7 @@ const AddProductModal = ({ onClose, refreshList }) => {
         <section className="aom-card">
           <div className="aom-card-title">Customizations</div>
           <div className="aom-grid aom-2">
-            {["fabrics", "eshra", "paintings", "marble", "dehnat"].map(
+            {["fabrics", "eshra", "paintings", "marble", "glass"].map(
               (field) => (
                 <div key={field} className="aom-field">
                   <label>{field[0].toUpperCase() + field.slice(1)}</label>

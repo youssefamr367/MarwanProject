@@ -9,7 +9,7 @@ class OrderController {
 
       for (const it of items) {
         const prod = await Product.findOne({ productId: it.productId }).select(
-          " _id fabrics eshra paintings marble dehnat"
+          " _id fabrics eshra paintings marble glass"
         );
         if (!prod) {
           return res
@@ -22,7 +22,7 @@ class OrderController {
           "eshra",
           "paintings",
           "marble",
-          "dehnat",
+          "glass",
         ]) {
           const incoming = it[field] || [];
           const allowed = prod[field].map((x) => x.toString());
@@ -39,7 +39,7 @@ class OrderController {
           eshra: it.eshra,
           paintings: it.paintings,
           marble: it.marble,
-          dehnat: it.dehnat,
+          glass: it.glass,
           supplier: it.supplierId,
         });
       }
@@ -65,7 +65,7 @@ class OrderController {
         .populate("items.eshra")
         .populate("items.paintings")
         .populate("items.marble")
-        .populate("items.dehnat");
+        .populate("items.glass");
       res.json(list);
     } catch (err) {
       res.status(400).json({ message: err.message });
@@ -81,7 +81,7 @@ class OrderController {
         .populate("items.eshra")
         .populate("items.paintings")
         .populate("items.marble")
-        .populate("items.dehnat");
+        .populate("items.glass");
       if (!o) return res.status(404).json({ message: "Order not found" });
       res.json(o);
     } catch (err) {
@@ -120,7 +120,7 @@ class OrderController {
         .populate("items.eshra")
         .populate("items.paintings")
         .populate("items.marble")
-        .populate("items.dehnat");
+        .populate("items.glass");
 
       res.json(populatedOrder);
     } catch (err) {
@@ -152,7 +152,7 @@ class OrderController {
         .populate("items.eshra")
         .populate("items.paintings")
         .populate("items.marble")
-        .populate("items.dehnat");
+        .populate("items.glass");
       res.json(list);
     } catch (err) {
       res.status(400).json({ message: err.message });

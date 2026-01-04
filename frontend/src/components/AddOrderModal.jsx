@@ -13,7 +13,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
     eshra: [],
     paintings: [],
     marble: [],
-    dehnat: [],
+    glass: [],
     supplierId: "",
   };
   const [itemDraft, setItemDraft] = useState(emptyItem);
@@ -23,7 +23,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
     eshra: "",
     paintings: "",
     marble: "",
-    dehnat: "",
+    glass: "",
   });
 
   const [items, setItems] = useState([]);
@@ -82,7 +82,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
       eshra: "",
       paintings: "",
       marble: "",
-      dehnat: "",
+      glass: "",
     });
   };
 
@@ -108,7 +108,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
       eshra: "",
       paintings: "",
       marble: "",
-      dehnat: "",
+      glass: "",
     });
   };
 
@@ -154,7 +154,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
         eshra: i.eshra,
         paintings: i.paintings,
         marble: i.marble,
-        dehnat: i.dehnat,
+        glass: i.glass,
         supplierId: i.supplierId,
       })),
       statusSla: normalizeSla(statusSla),
@@ -265,7 +265,7 @@ const AddOrderModal = ({ onClose, refreshList }) => {
 
           {selProd && (
             <div className="aom-grid aom-2">
-              {["fabrics", "eshra", "paintings", "marble", "dehnat"].map(
+              {["fabrics", "eshra", "paintings", "marble", "glass"].map(
                 (field) => (
                   <div key={field} className="aom-field">
                     <label>{field[0].toUpperCase() + field.slice(1)}</label>

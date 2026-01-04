@@ -50,4 +50,4 @@ Your API will be available at:
 - `/api/eshra/*` - Eshra routes
 - `/api/paintings/*` - Painting routes
 - `/api/marbles/*` - Marble routes
-- `/api/dehnat/*` - Dehnat routes
+- `/api/glass/*` - Glass routes

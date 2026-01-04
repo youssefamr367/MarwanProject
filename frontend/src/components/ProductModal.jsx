@@ -9,7 +9,7 @@ const ProductModal = ({ product, onClose, refreshList }) => {
     eshra: [],
     paintings: [],
     marble: [],
-    dehnat: [],
+    glass: [],
     images: "",
   });
 
@@ -18,7 +18,7 @@ const ProductModal = ({ product, onClose, refreshList }) => {
     eshra: [],
     paintings: [],
     marble: [],
-    dehnat: [],
+    glass: [],
     suppliers: [],
   });
 
@@ -27,7 +27,7 @@ const ProductModal = ({ product, onClose, refreshList }) => {
     eshra: "",
     paintings: "",
     marble: "",
-    dehnat: "",
+    glass: "",
     supplier: "",
   });
 
@@ -38,11 +38,11 @@ const ProductModal = ({ product, onClose, refreshList }) => {
       fetch("/api/eshra/all").then(r => r.json()),
       fetch("/api/paintings/all").then(r => r.json()),
       fetch("/api/marbles/all").then(r => r.json()),
-      fetch("/api/dehnat/all").then(r => r.json()),
+      fetch("/api/glass/all").then(r => r.json()),
       fetch("/api/suppliers/all").then(r => r.json()),
     ])
       .then(([f, e, p, m, d, s]) => {
-        setLists({ fabrics: f, eshra: e, paintings: p, marble: m, dehnat: d, suppliers: s });
+        setLists({ fabrics: f, eshra: e, paintings: p, marble: m, glass: d, suppliers: s });
       })
       .catch(console.error);
 
@@ -53,7 +53,7 @@ const ProductModal = ({ product, onClose, refreshList }) => {
       eshra: product.eshra.map(o => o._id),
       paintings: product.paintings.map(o => o._id),
       marble: product.marble.map(o => o._id),
-      dehnat: product.dehnat.map(o => o._id),
+      glass: product.glass.map(o => o._id),
       images: product.images || "",
     });
     setSel(s => ({ ...s, supplier: product.supplier?._id || "" }));
@@ -168,7 +168,7 @@ const ProductModal = ({ product, onClose, refreshList }) => {
         <section className="aom-card">
           <div className="aom-card-title">Customizations</div>
           <div className="aom-grid aom-2">
-            {["fabrics", "eshra", "paintings", "marble", "dehnat"].map(field => (
+            {["fabrics", "eshra", "paintings", "marble", "glass"].map(field => (
               <div key={field} className="aom-field">
                 <label>{field[0].toUpperCase() + field.slice(1)}</label>
                 <div className="aom-inline">

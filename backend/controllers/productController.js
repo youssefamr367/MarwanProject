@@ -5,7 +5,7 @@ import Fabric    from "../models/Fabric.js";
 import Eshra     from "../models/Eshra.js";
 import Painting  from "../models/Painting.js";
 import Marble    from "../models/Marble.js";
-import Dehnat    from "../models/Dehnat.js";
+import Glass    from "../models/Glass.js";
 
 const validateIds = async (Model, ids, label) => {
     if (!ids) return;
@@ -20,7 +20,7 @@ class ProductController {
             const {
                 productId, name, description,
                 fabrics, eshra, paintings,
-                marble, dehnat, supplier, images
+                marble, glass, supplier, images
             } = req.body;
 
             if (await Product.exists({ productId })) {
@@ -40,13 +40,13 @@ class ProductController {
                 validateIds(Eshra,    eshra,     "eshra"),
                 validateIds(Painting, paintings, "painting"),
                 validateIds(Marble,   marble,    "marble"),
-                validateIds(Dehnat,   dehnat,    "dehnat")
+                validateIds(Glass,   glass,    "glass")
             ]);
 
             const newProduct = await Product.create({
                 productId, name, description,
                 fabrics, eshra, paintings,
-                marble, dehnat, supplier, images
+                marble, glass, supplier, images
             });
             res.status(201).json(newProduct);
 
@@ -62,7 +62,7 @@ class ProductController {
                 .populate("eshra")
                 .populate("paintings")
                 .populate("marble")
-                .populate("dehnat")
+                .populate("glass")
                 .populate("supplier");
             res.json(prods);
         } catch (err) {
@@ -77,7 +77,7 @@ class ProductController {
                 .populate("eshra")
                 .populate("paintings")
                 .populate("marble")
-                .populate("dehnat")
+                .populate("glass")
                 .populate("supplier");
             if (!p) return res.status(404).json({ message: "Product not found" });
             res.json(p);
@@ -102,7 +102,7 @@ class ProductController {
                 validateIds(Eshra,    updates.eshra,     "eshra"),
                 validateIds(Painting, updates.paintings, "painting"),
                 validateIds(Marble,   updates.marble,    "marble"),
-                validateIds(Dehnat,   updates.dehnat,    "dehnat")
+                validateIds(Glass,   updates.glass,    "glass")
             ]);
 
             const updated = await Product.findOneAndUpdate(
@@ -114,7 +114,7 @@ class ProductController {
                 .populate("eshra")
                 .populate("paintings")
                 .populate("marble")
-                .populate("dehnat")
+                .populate("glass")
                 .populate("supplier");
 
             if (!updated) return res.status(404).json({ message: "Product not found" });

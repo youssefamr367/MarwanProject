@@ -41,7 +41,7 @@ const ItemDetailModal = ({ item, onClose }) => {
                     <strong>Marble:</strong> {renderList(item.marble)}
                 </p>
                 <p>
-                    <strong>Dehnat:</strong> {renderList(item.dehnat)}
+                    <strong>Glass:</strong> {renderList(item.glass)}
                 </p>
 
                 <p>

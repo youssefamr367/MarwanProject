@@ -6,7 +6,7 @@ const LOOKUP_TYPES = [
     { label: "Eshra",      value: "eshra",      api: "/api/eshra"     },
     { label: "Paintings",  value: "paintings",  api: "/api/paintings" },
     { label: "Marbles",    value: "marbles",    api: "/api/marbles"   },
-    { label: "Dehnat",     value: "dehnat",     api: "/api/dehnat"    },
+    { label: "Glass",     value: "glass",     api: "/api/glass"    },
 ];
 
 const LookupManager = () => {

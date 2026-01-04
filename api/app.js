@@ -157,8 +157,8 @@ async function setupRoutes() {
     const MarbleRoutes = (await import("./routes/MarbleRoute.js")).default;
     console.log("✅ MarbleRoute loaded");
 
-    const DehnatRoutes = (await import("./routes/DehnatRoute.js")).default;
-    console.log("✅ DehnatRoute loaded");
+    const GlassRoutes = (await import("./routes/GlassRoute.js")).default;
+    console.log("✅ GlassRoute loaded");
 
     app.use("/api/Product", ProductRoutes);
     console.log("✅ ProductRoute registered");
@@ -181,8 +181,8 @@ async function setupRoutes() {
     app.use("/api/marbles", MarbleRoutes);
     console.log("✅ MarbleRoute registered");
 
-    app.use("/api/dehnat", DehnatRoutes);
-    console.log("✅ DehnatRoute registered");
+    app.use("/api/glass", GlassRoutes);
+    console.log("✅ GlassRoute registered");
 
     routesLoaded = true;
     console.log("✅✅ All routes registered successfully");

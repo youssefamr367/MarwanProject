@@ -50,7 +50,7 @@ const ProductDetailModal = ({ product, onClose }) => {
         <section className="aom-card">
           <div className="aom-card-title">Customizations</div>
           <div className="aom-grid aom-2">
-            {["fabrics", "eshra", "paintings", "marble", "dehnat"].map((field) => (
+            {["fabrics", "eshra", "paintings", "marble", "glass"].map((field) => (
               <div key={field} className="aom-field">
                 <label>{field[0].toUpperCase() + field.slice(1)}</label>
                 {product[field]?.length ? (

@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const DehnatSchema = new Schema({
+const GlassSchema = new Schema({
     name: { type: String, required: true, unique: true }
 }, { timestamps: true });
 
-export default mongoose.models.Dehnat || mongoose.model('Dehnat', DehnatSchema);
+export default mongoose.models.Glass || mongoose.model('Glass', GlassSchema);

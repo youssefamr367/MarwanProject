@@ -7,7 +7,7 @@ const OrderItemSchema = new Schema({
   eshra: [{ type: Schema.Types.ObjectId, ref: "Eshra" }],
   paintings: [{ type: Schema.Types.ObjectId, ref: "Painting" }],
   marble: [{ type: Schema.Types.ObjectId, ref: "Marble" }],
-  dehnat: [{ type: Schema.Types.ObjectId, ref: "Dehnat" }],
+  glass: [{ type: Schema.Types.ObjectId, ref: "Glass" }],
   supplier: { type: Schema.Types.ObjectId, ref: "Supplier", required: true },
 });
 

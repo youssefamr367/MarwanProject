@@ -13,7 +13,7 @@ const ProductSchema = new Schema(
       { type: Schema.Types.ObjectId, ref: "Painting", required: true },
     ],
     marble: [{ type: Schema.Types.ObjectId, ref: "Marble", required: true }],
-    dehnat: [{ type: Schema.Types.ObjectId, ref: "Dehnat", required: true }],
+    glass: [{ type: Schema.Types.ObjectId, ref: "Glass", required: true }],
 
     supplier: { type: Schema.Types.ObjectId, ref: "Supplier", required: true },
     images: { type: String },
